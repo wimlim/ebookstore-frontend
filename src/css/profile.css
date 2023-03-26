@@ -1,0 +1,47 @@
+/* profile.css */
+
+.profile-view {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.avatar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 40px;
+    flex: 1;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.ant-input {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.ant-form-item-label {
+    width: 100px;
+}
+
+.ant-avatar-square {
+    margin-bottom: 24px;
+}
+
+.ant-upload {
+    margin-bottom: 16px;
+}
+
+.ant-input-textarea {
+    width: 100%;
+    resize: none;
+}
+
+.ant-btn {
+    margin-left: 8px;
+}
