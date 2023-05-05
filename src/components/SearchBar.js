@@ -15,12 +15,16 @@ class SearchBar extends Component {
 
     render() {
         return (
-            <div>
-                <Search
-                    placeholder="input search text"
-                    onSearch={this.handleSearch}
-                    enterButton
-                />
+            <div className="global-search-wrapper">
+                <div className="global-search">
+                    <div>
+                        <Search
+                        placeholder="input search text"
+                        onSearch={this.handleSearch}
+                        enterButton
+                        />
+                    </div>
+                </div>
             </div>
         );
     }
