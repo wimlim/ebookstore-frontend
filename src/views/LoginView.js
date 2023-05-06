@@ -14,9 +14,9 @@ const LoginView = ({ onLogin }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: username, password })
             });
-            const data = await response.json();
-            if (data.success) {
-                onLogin();
+            const userId = await response.json();
+            if (userId !== -1) {
+                onLogin(userId);
                 navigate('/home');
             } else {
                 alert('Incorrect username or password');
@@ -26,6 +26,7 @@ const LoginView = ({ onLogin }) => {
             alert('An error occurred while logging in. Please try again later.');
         }
     };
+
 
     return (
         <div className="login-container">

@@ -25,7 +25,7 @@ class CartView extends Component {
     }
 
     handleDelete = async (record) => {
-        const response = await fetch(`http://localhost:8080/lists/${record.cover}`, {
+        const response = await fetch(`http://localhost:8080/list/${this.props.user}?book_id=${record.cover}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -38,12 +38,11 @@ class CartView extends Component {
     }
 
     handleAmountChange = async (record) => {
-        const response = await fetch(`http://localhost:8080/lists/${record.cover}`, {
+        const response = await fetch(`http://localhost:8080/list/${this.props.user}?bookId=${record.cover}&amount=${record.amount}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(record)
         });
         if(response.ok){
             const newList = this.state.lists.map(item => {
@@ -59,8 +58,9 @@ class CartView extends Component {
         }
     }
 
+
     handlePurchase = async () => {
-        const response = await fetch('http://localhost:8080/lists/purchase', {
+        const response = await fetch(`http://localhost:8080/list/${this.props.user}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ class CartView extends Component {
 
     async componentDidMount() {
         try {
-            const res = await fetch('http://localhost:8080/lists');
+            const res = await fetch(`http://localhost:8080/list/${this.props.user}`);
             const json = await res.json();
             const books = json.map(data => ({
                 cover: data[0],
