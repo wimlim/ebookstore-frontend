@@ -8,7 +8,6 @@ const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const BookDetail = (props) => {
-    const { handleAddToCart } = props;
     const location = useLocation();
     const navigate = useNavigate();
     const id = new URLSearchParams(location.search).get('id');
@@ -18,9 +17,19 @@ const BookDetail = (props) => {
         navigate('/home');
     };
 
-    const handleAddtoCart = () => {
-
-    }
+    const handleAddToCart = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/list/${props.user}?bookId=${id}&amount=${1}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Failed to add to cart!");
+        }
+    };
 
     const columns = [
         {
@@ -115,7 +124,7 @@ const BookDetail = (props) => {
             )}
             <div className="buttons-container">
                 <Button type="primary" size="large" >Buy Now</Button>
-            <Button size="large" onClick={() => handleAddToCart(id)}>Add to Cart</Button>
+            <Button size="large" onClick={handleAddToCart}>Add to Cart</Button>
             </div>
         </Content>
     );
