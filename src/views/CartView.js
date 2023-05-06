@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import { Layout, Button } from 'antd';
-import SideBar from "../routes/SideBar";
-import HeaderInfo from "../components/HeaderInfo";
+import { Button } from 'antd';
 import '../css/home.css'
 import SearchBar from "../components/SearchBar";
 import ShoppingList from "../components/ShoppingList";
 
-const { Header, Content, Sider, Footer } = Layout;
 
 class CartView extends Component {
     constructor(props) {
@@ -18,6 +15,7 @@ class CartView extends Component {
         this.handleSearch = this.handleSearch.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAmountChange = this.handleAmountChange.bind(this);
+        this.handlePurchase = this.handlePurchase.bind(this);
     }
 
     handleSearch = (content) => {
@@ -25,7 +23,7 @@ class CartView extends Component {
     }
 
     handleDelete = async (record) => {
-        const response = await fetch(`http://localhost:8080/list/${this.props.user}?book_id=${record.cover}`, {
+        const response = await fetch(`http://localhost:8080/lists/${this.props.user}?book_id=${record.cover}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -38,7 +36,7 @@ class CartView extends Component {
     }
 
     handleAmountChange = async (record) => {
-        const response = await fetch(`http://localhost:8080/list/${this.props.user}?bookId=${record.cover}&amount=${record.amount}`, {
+        const response = await fetch(`http://localhost:8080/lists/${this.props.user}?bookId=${record.cover}&amount=${record.amount}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -60,34 +58,29 @@ class CartView extends Component {
 
 
     handlePurchase = async () => {
-        const response = await fetch(`http://localhost:8080/list/${this.props.user}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.state.lists)
-        });
-
         try {
-            const responseData = await response.text();
+            const response = await fetch(`http://localhost:8080/lists/${this.props.user}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
             if (response.ok) {
-                console.log('Order confirmed!');
-                const newList = [];
-                this.setState({ lists: newList });
-                window.alert(JSON.stringify(responseData));
+                alert("Purchase successfully!");
             } else {
-                console.error(`HTTP error! status: ${response.status}, message: ${responseData}`);
-                window.alert('Failed to purchase the list');
+                throw new Error("Failed to create order!");
             }
-        } catch(error) {
+            this.setState({ lists: [] });
+        } catch (error) {
             console.error(error);
-            window.alert('Failed to get response data');
+            alert("Error occurred while purchasing the items!");
         }
     }
 
+
     async componentDidMount() {
         try {
-            const res = await fetch(`http://localhost:8080/list/${this.props.user}`);
+            const res = await fetch(`http://localhost:8080/lists/${this.props.user}`);
             const json = await res.json();
             const books = json.map(data => ({
                 cover: data[0],

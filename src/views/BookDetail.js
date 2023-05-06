@@ -19,7 +19,7 @@ const BookDetail = (props) => {
 
     const handleAddToCart = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/list/${props.user}?bookId=${id}&amount=${1}`, {
+            const response = await fetch(`http://localhost:8080/lists/${props.user}?bookId=${id}&amount=${1}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -30,6 +30,23 @@ const BookDetail = (props) => {
             alert("Failed to add to cart!");
         }
     };
+
+    const handlePurchase = async  () => {
+        try {
+            const response = await fetch(`http://localhost:8080/orders/${props.user}?book_id=${id}`, {
+                method: 'PUT',
+               headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            if (response.ok) {
+                alert("Purchaes successfully!");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Failed to purchase!");
+        }
+    }
 
     const columns = [
         {
@@ -123,7 +140,7 @@ const BookDetail = (props) => {
                 </div>
             )}
             <div className="buttons-container">
-                <Button type="primary" size="large" >Buy Now</Button>
+                <Button size="large" onClick={handlePurchase}>Buy Now</Button>
             <Button size="large" onClick={handleAddToCart}>Add to Cart</Button>
             </div>
         </Content>
