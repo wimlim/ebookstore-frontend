@@ -28,6 +28,20 @@
 
 }
 
+.description-box {
+    width: 600px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #ccc;
+}
+
+.description {
+    height: 100px;
+    width: 100%;
+    overflow-y: auto;
+}
+
+
 .price {
     color:red !important;
     font-size: 18px !important;

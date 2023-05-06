@@ -18,16 +18,16 @@ const { Header, Content, Sider, Footer } = Layout;
 
 const App = () => {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [user, setUser] = useState(null);
+    const [userauth, setUserauth] = useState(null);
 
     const handleLogin = (user) => {
         setLoggedIn(true);
-        setUser(user);
+        setUserauth(user);
     };
 
     const handleLogout = () => {
         setLoggedIn(false);
-        setUser(null);
+        setUserauth(null);
     };
 
     return (
@@ -37,15 +37,15 @@ const App = () => {
             </Header>
             <BrowserRouter>
                 <div style={{display:'flex'}}>
-                    {loggedIn && <SideBar user={user} />}
+                    {loggedIn && <SideBar user={userauth} />}
                     <Content className="ant-layout-content">
                         <Routes>
                             <Route path="/" element={<LoginView onLogin={handleLogin} />} />
-                            {loggedIn && <Route path="/home" element={<HomeView user={user} />} />}
-                            {loggedIn && <Route path="/cart" element={<CartView user={user} />} />}
-                            {loggedIn && <Route path="/order" element={<OrderView user={user} />} />}
-                            {loggedIn && <Route path="/profile" element={<ProfileView user={user} />} />}
-                            {loggedIn && <Route path="/bookDetails" element={<BookDetail user={user} />} />}
+                            {loggedIn && <Route path="/home" element={<HomeView user={userauth} />} />}
+                            {loggedIn && <Route path="/cart" element={<CartView user={userauth} />} />}
+                            {loggedIn && <Route path="/order" element={<OrderView user={userauth} />} />}
+                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth} />} />}
+                            {loggedIn && <Route path="/bookDetails" element={<BookDetail user={userauth} />} />}
                             {loggedIn && <Route path="*" element={<ErrorPage />} />}
                         </Routes>
                     </Content>

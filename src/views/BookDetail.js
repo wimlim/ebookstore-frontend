@@ -134,9 +134,8 @@ const BookDetail = (props) => {
                 </div>
             )}
             {book && (
-                <div className="description">
-                    <Title level={4}>Description</Title>
-                    <Text>{book.description}</Text>
+                <div className="description-box">
+                    <div className="description">{book.description}</div>
                 </div>
             )}
             <div className="buttons-container">

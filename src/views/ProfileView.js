@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import { Typography, Button, Form } from 'antd';
 import NameForm from '../components/NameForm';
 import TwitterForm from '../components/TwitterForm';
@@ -8,38 +8,70 @@ import '../css/profile.css';
 
 const { Title } = Typography;
 
-const ProfileView = () => {
-    const [avatarSrc, setAvatarSrc] = useState(require("../assets/avatar.jpg"));
+class ProfileView extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            avatarSrc: require("../assets/avatar.jpg"),
+            firstname: "",
+            lastname: "",
+            twitter: "",
+            notes: "",
+        };
+    }
 
-    const handleAvatarChange = () => {
+    async componentDidMount() {
+        try {
+            const response = await fetch(`http://localhost:8080/profile/${this.props.user}`);
+            const data = await response.json();
+            if (response.ok) {
+                const [firstname, lastname, twitter, notes] = data[0];
+                // 更新组件状态
+                this.setState({ firstname, lastname, twitter, notes });
+            } else {
+                console.log(data.error);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    handleAvatarChange = () => {
+        // handle avatar change logic goes here
     };
 
-    const handleSave = () => {
+    handleSave = () => {
+        // handle save logic goes here
     };
 
-    const handleCancel = () => {
+    handleCancel = () => {
+        // handle cancel logic goes here
     };
 
-    return (
-        <div className="profile-view">
-            <Title level={1}>My Profile</Title>
+    render() {
+        const { avatarSrc, firstname, lastname, twitter, notes } = this.state;
 
-            <Title level={4}>Name</Title>
-            <NameForm />
+        return (
+            <div className="profile-view">
+                <Title level={1}>My Profile</Title>
 
-            <Title level={4}>Twitter</Title>
-            <TwitterForm />
+                <Title level={4}>Name</Title>
+                <NameForm firstname={firstname} lastname={lastname} />
 
-            <Form layout="inline">
-                <AvatarUpload src={avatarSrc} onChange={handleAvatarChange} />
-                <NotesInput />
-            </Form>
-            <div className="button-wrapper">
-                <Button type="primary" onClick={handleSave}>Save</Button>
-                <Button style={{ marginLeft: '8px' }} onClick={handleCancel}>Cancel</Button>
+                <Title level={4}>Twitter</Title>
+                <TwitterForm twitter={twitter} />
+
+                <Form layout="inline">
+                    <AvatarUpload src={avatarSrc} onChange={this.handleAvatarChange} />
+                    <NotesInput notes={notes} />
+                </Form>
+                <div className="button-wrapper">
+                    <Button type="primary" onClick={this.handleSave}>Save</Button>
+                    <Button style={{ marginLeft: '8px' }} onClick={this.handleCancel}>Cancel</Button>
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    }
+}
 
 export default ProfileView;

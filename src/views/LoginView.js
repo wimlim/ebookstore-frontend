@@ -12,11 +12,11 @@ const LoginView = ({ onLogin }) => {
             const response = await fetch('http://localhost:8080/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: username, password })
+                body: JSON.stringify({ account: username, password })
             });
-            const userId = await response.json();
-            if (userId !== -1) {
-                onLogin(userId);
+            const hash = await response.text();
+            if (hash !== '') {
+                onLogin(hash);
                 navigate('/home');
             } else {
                 alert('Incorrect username or password');
@@ -26,6 +26,7 @@ const LoginView = ({ onLogin }) => {
             alert('An error occurred while logging in. Please try again later.');
         }
     };
+
 
 
     return (
