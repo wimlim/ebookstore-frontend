@@ -28,7 +28,7 @@ class OrderList extends Component {
                                     key: 'id',
                                     render: (text, record) => (
                                         <Link to={`/bookDetails?id=${record.id}`}>
-                                            <img src={require("../assets/books/" + record.id + ".jpg")} alt="Book cover" style={{ maxHeight: '100px', maxWidth: '100px' }} />
+                                            <img src={`http://localhost:8080/books/image/${record.id}`} alt="Book cover" style={{ maxHeight: '100px', maxWidth: '100px' }} />
                                         </Link>
                                     )
                                 },

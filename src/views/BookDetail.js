@@ -25,6 +25,9 @@ const BookDetail = (props) => {
                     'Content-Type': 'application/json'
                 },
             });
+            if (response.ok) {
+                alert("Add to cart successfully!");
+            }
         } catch (error) {
             console.error(error);
             alert("Failed to add to cart!");
@@ -33,14 +36,14 @@ const BookDetail = (props) => {
 
     const handlePurchase = async  () => {
         try {
-            const response = await fetch(`http://localhost:8080/orders/${props.user}?book_id=${id}`, {
+            const response = await fetch(`http://localhost:8080/orders/${props.user}?bookId=${id}`, {
                 method: 'PUT',
-               headers: {
+                headers: {
                     'Content-Type': 'application/json'
                 },
             });
             if (response.ok) {
-                alert("Purchaes successfully!");
+                alert("Purchased successfully!");
             }
         } catch (error) {
             console.error(error);
@@ -96,23 +99,27 @@ const BookDetail = (props) => {
 
     useEffect(() => {
         const fetchBook = async () => {
-            const response = await fetch(`http://localhost:8080/books/${id}`);
-            const data = await response.json();
-            const bookData = data[0];
-            const book = {
-                id: bookData[0],
-                name: bookData[1],
-                author: bookData[2],
-                language: bookData[3],
-                year: bookData[4],
-                price: bookData[5],
-                status: bookData[6],
-                description: bookData[7]
-            };
-            setBook(book);
-        }
+            try {
+                const bookResponse = await fetch(`http://localhost:8080/books/${id}`);
+                const bookData = await bookResponse.json();
+                const book = {
+                    id: bookData.id,
+                    name: bookData.title,
+                    author: bookData.author,
+                    language: bookData.language,
+                    year: bookData.published,
+                    price: bookData.price,
+                    status: bookData.status,
+                    description: bookData.description
+                };
+                setBook(book);
+            } catch (err) {
+                console.error('Error fetching book data:', err);
+            }
+        };
         fetchBook();
     }, [id]);
+
 
     return (
         <Content className="book-detail">
@@ -123,7 +130,7 @@ const BookDetail = (props) => {
             {book && (
                 <div className="book-details-container">
                     <div className="book-image">
-                        <img src={require("../assets/books/" + book.id + ".jpg")} alt="Book Cover" style={{ width: 200, height: 300 }} />
+                        <img src={`http://localhost:8080/books/image/${id}`} alt="Book Cover" style={{ width: 200, height: 300 }} />
                     </div>
                     <div className="descriptions">
                         <Title className="title" level={2}>

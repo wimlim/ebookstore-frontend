@@ -7,6 +7,8 @@ class ShoppingList extends Component {
         super(props);
         this.state = {};
     }
+
+
     handleAmountChange = (value, record) => {
         const newRecord = {
             ...record,
@@ -25,7 +27,7 @@ class ShoppingList extends Component {
                 key: 'cover',
                 render: (text, record) => (
                     <Link to={`/bookDetails?id=${record.cover}`}>
-                        <img src={require("../assets/books/" + record.cover + ".jpg")} alt="Book cover" style={{ maxHeight: '100px', maxWidth: '100px' }} />
+                        <img src={`http://localhost:8080/books/image/${record.cover}`} alt="Book cover" style={{ maxHeight: '100px', maxWidth: '100px' }} />
                     </Link>
                 )
             },

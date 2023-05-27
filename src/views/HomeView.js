@@ -22,15 +22,16 @@ class HomeView extends Component {
             const res = await fetch('http://localhost:8080/books');
             const json = await res.json();
             const books = json.map(data => ({
-                id: data[0],
-                name: data[1],
-                price: data[5],
+                id: data.id,
+                name: data.title,
+                price: data.price,
             }));
             this.setState({ books });
         } catch (err) {
             console.error('Error fetching data:', err);
         }
     }
+
 
 
     handleSearch = (content) => {

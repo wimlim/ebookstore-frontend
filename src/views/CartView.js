@@ -23,7 +23,7 @@ class CartView extends Component {
     }
 
     handleDelete = async (record) => {
-        const response = await fetch(`http://localhost:8080/lists/${this.props.user}?book_id=${record.cover}`, {
+        const response = await fetch(`http://localhost:8080/lists/${this.props.user}?bookId=${record.cover}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -76,7 +76,6 @@ class CartView extends Component {
             alert("Error occurred while purchasing the items!");
         }
     }
-
 
     async componentDidMount() {
         try {

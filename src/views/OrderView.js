@@ -11,7 +11,6 @@ class CartView extends Component {
             orders: []
         };
     }
-
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/orders/${this.props.user}`);

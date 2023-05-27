@@ -1,4 +1,3 @@
-import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginView from "./views/LoginView";
 import HomeView from "./views/HomeView";
@@ -11,6 +10,7 @@ import SideBar from "./routes/SideBar";
 import React, { useState } from "react";
 import HeaderInfo from "./components/HeaderInfo";
 import { Layout, theme } from 'antd';
+import './css/App.css';
 import "./css/index.css";
 
 const { Header, Content, Sider, Footer } = Layout;
