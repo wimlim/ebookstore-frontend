@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Table, Button, Modal, Form, Input } from 'antd';
 import axios from 'axios';
 
+import SearchBar from '../components/SearchBar';
+
 const { Column } = Table;
 
 class BookManagementView extends Component {
@@ -9,6 +11,7 @@ class BookManagementView extends Component {
         super(props);
         this.state = {
             books: [],
+            searchedBooks: [],
             editingBookId: null,
             editingBookTitle: '',
             editingBookAuthor: '',
@@ -108,16 +111,22 @@ class BookManagementView extends Component {
             console.log(error);
         }
     };
-;
 
     handleInputChange = (event) => {
         const { name, value } = event.target;
         this.setState({ [name]: value });
     };
 
+    handleSearch = (value) => {
+        const { books } = this.state;
+        const searchedBooks = books.filter((book) => book.title.includes(value));
+        this.setState({ searchedBooks });
+    };
+
     render() {
         const {
             books,
+            searchedBooks,
             editingBookId,
             editingBookTitle,
             editingBookAuthor,
@@ -129,9 +138,13 @@ class BookManagementView extends Component {
             isEditing,
         } = this.state;
 
+        const dataSource = searchedBooks.length > 0 ? searchedBooks : books;
+
         return (
             <div>
-                <Table dataSource={books} rowKey="id">
+                <SearchBar handleSearch={this.handleSearch} />
+
+                <Table dataSource={dataSource} rowKey="id">
                     <Column title="ID" dataIndex="id" key="id" />
                     <Column title="Title" dataIndex="title" key="title" />
                     <Column title="Author" dataIndex="author" key="author" />
