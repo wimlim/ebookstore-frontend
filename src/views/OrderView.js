@@ -21,11 +21,11 @@ class CartView extends Component {
             const orders = [];
             for (const timestampObj of json) {
                 const timestamp = timestampObj.timestamp;
-                const items = timestampObj.items.map(itemArr => ({
-                    id: itemArr[0],
-                    title: itemArr[1],
-                    amount: itemArr[2],
-                    price: itemArr[3]
+                const items = timestampObj.items.map(item => ({
+                    id: item.bookId,
+                    title: item.title,
+                    amount: item.num,
+                    price: item.price
                 }));
                 orders.push({
                     timestamp,
@@ -38,6 +38,7 @@ class CartView extends Component {
             alert('Failed to fetch data. Please try again later.');
         }
     }
+
 
     render() {
 

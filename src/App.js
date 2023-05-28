@@ -41,7 +41,7 @@ const App = () => {
                     <Content className="ant-layout-content">
                         <Routes>
                             <Route path="/" element={<LoginView onLogin={handleLogin} />} />
-                            {loggedIn && <Route path="/home" element={<HomeView user={userauth} />} />}
+                            {loggedIn && <Route path="/home" element={<HomeView />} />}
                             {loggedIn && <Route path="/cart" element={<CartView user={userauth} />} />}
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth} />} />}
                             {loggedIn && <Route path="/profile" element={<ProfileView user={userauth} />} />}

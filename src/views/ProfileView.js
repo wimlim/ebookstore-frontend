@@ -22,10 +22,10 @@ class ProfileView extends Component {
 
     async componentDidMount() {
         try {
-            const response = await fetch(`http://localhost:8080/profile/${this.props.user}`);
+            const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
             const data = await response.json();
             if (response.ok) {
-                const [firstname, lastname, twitter, notes] = data[0];
+                const { firstname, lastname, twitter, notes } = data;
                 // 更新组件状态
                 this.setState({ firstname, lastname, twitter, notes });
             } else {
@@ -35,6 +35,7 @@ class ProfileView extends Component {
             console.log(error);
         }
     }
+
 
     handleAvatarChange = () => {
         // handle avatar change logic goes here

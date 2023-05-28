@@ -82,16 +82,17 @@ class CartView extends Component {
             const res = await fetch(`http://localhost:8080/lists/${this.props.user}`);
             const json = await res.json();
             const books = json.map(data => ({
-                cover: data[0],
-                title: data[1],
-                amount: data[2],
-                price: data[3]
+                cover: data.id,
+                title: data.title,
+                amount: data.amount,
+                price: data.price
             }));
             this.setState({ lists: books });
         } catch (err) {
             console.error('Error fetching data:', err);
         }
     }
+
 
     render() {
         const filteredLists = this.state.lists.filter(item => {

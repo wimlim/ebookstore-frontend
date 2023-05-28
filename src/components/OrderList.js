@@ -11,12 +11,10 @@ class OrderList extends Component {
     render() {
         const { orders } = this.props;
 
-        // 将订单按时间从晚到早排序
-        const sortedOrders = orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         return (
             <div>
-                {sortedOrders.map((order, index) => (
+                {orders.map((order, index) => (
                     <div key={index}>
                         <h2>Order {index + 1} - {order.timestamp}</h2>
                         <Table

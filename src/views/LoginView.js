@@ -9,7 +9,7 @@ const LoginView = ({ onLogin }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('http://localhost:8080/login', {
+            const response = await fetch('http://localhost:8080/users/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ account: username, password })

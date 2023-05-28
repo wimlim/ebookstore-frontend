@@ -32,8 +32,6 @@ class HomeView extends Component {
         }
     }
 
-
-
     handleSearch = (content) => {
         this.setState({ searchContent: content });
     }
