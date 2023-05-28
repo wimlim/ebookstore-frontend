@@ -5,16 +5,16 @@ import CartView from "./views/CartView";
 import OrderView from "./views/OrderView";
 import ProfileView from "./views/ProfileView";
 import BookDetail from "./views/BookDetail";
+import BookManagementView from "./views/BookManagementView"; // 新添加的书籍管理页面
 import ErrorPage from "./views/error-page";
 import SideBar from "./routes/SideBar";
 import React, { useState } from "react";
 import HeaderInfo from "./components/HeaderInfo";
-import { Layout, theme } from 'antd';
+import { Layout } from 'antd';
 import './css/App.css';
 import "./css/index.css";
 
 const { Header, Content, Sider, Footer } = Layout;
-
 
 const App = () => {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -46,6 +46,7 @@ const App = () => {
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}
                             {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} />} />}
                             {loggedIn && <Route path="/bookDetails" element={<BookDetail user={userauth.token} />} />}
+                            {loggedIn && userauth.isAdmin && <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />}
                             {loggedIn && <Route path="*" element={<ErrorPage />} />}
                         </Routes>
                     </Content>
