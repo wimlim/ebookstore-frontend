@@ -42,10 +42,10 @@ const App = () => {
                         <Routes>
                             <Route path="/" element={<LoginView onLogin={handleLogin} />} />
                             {loggedIn && <Route path="/home" element={<HomeView />} />}
-                            {loggedIn && <Route path="/cart" element={<CartView user={userauth} />} />}
-                            {loggedIn && <Route path="/order" element={<OrderView user={userauth} />} />}
-                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth} />} />}
-                            {loggedIn && <Route path="/bookDetails" element={<BookDetail user={userauth} />} />}
+                            {loggedIn && <Route path="/cart" element={<CartView user={userauth.token} />} />}
+                            {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}
+                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} />} />}
+                            {loggedIn && <Route path="/bookDetails" element={<BookDetail user={userauth.token} />} />}
                             {loggedIn && <Route path="*" element={<ErrorPage />} />}
                         </Routes>
                     </Content>

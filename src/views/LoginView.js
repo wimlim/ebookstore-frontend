@@ -14,9 +14,11 @@ const LoginView = ({ onLogin }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ account: username, password })
             });
-            const hash = await response.text();
-            if (hash !== '') {
-                onLogin(hash);
+            const data = await response.text();
+            if (data !== '') {
+                const [token, isAdmin] = data.split(",");
+                const tokenAndAdmin = { token, isAdmin };
+                onLogin(tokenAndAdmin);
                 navigate('/home');
             } else {
                 alert('Incorrect username or password');
@@ -26,7 +28,6 @@ const LoginView = ({ onLogin }) => {
             alert('An error occurred while logging in. Please try again later.');
         }
     };
-
 
 
     return (
