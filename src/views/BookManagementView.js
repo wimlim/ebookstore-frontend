@@ -112,6 +112,15 @@ class BookManagementView extends Component {
         }
     };
 
+    handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8080/books/${id}`);
+            this.fetchBooks();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     handleInputChange = (event) => {
         const { name, value } = event.target;
         this.setState({ [name]: value });
@@ -157,9 +166,14 @@ class BookManagementView extends Component {
                         title="Action"
                         key="action"
                         render={(text, record) => (
-                            <Button type="primary" onClick={() => this.showEditModal(record)}>
-                                Edit
-                            </Button>
+                            <div>
+                                <Button type="primary" onClick={() => this.showEditModal(record)}>
+                                    Edit
+                                </Button>
+                                <Button type="danger" onClick={() => this.handleDelete(record.id)}>
+                                    Delete
+                                </Button>
+                            </div>
                         )}
                     />
                 </Table>

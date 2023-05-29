@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginView from "./views/LoginView";
-import HomeView from "./views/HomeView";
-import CartView from "./views/CartView";
-import OrderView from "./views/OrderView";
-import ProfileView from "./views/ProfileView";
-import BookDetail from "./views/BookDetail";
-import BookManagementView from "./views/BookManagementView"; // 新添加的书籍管理页面
-import ErrorPage from "./views/error-page";
-import SideBar from "./routes/SideBar";
-import React, { useState } from "react";
-import HeaderInfo from "./components/HeaderInfo";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginView from './views/LoginView';
+import HomeView from './views/HomeView';
+import CartView from './views/CartView';
+import OrderView from './views/OrderView';
+import ProfileView from './views/ProfileView';
+import BookDetail from './views/BookDetail';
+import BookManagementView from './views/BookManagementView';
+import ErrorPage from './views/error-page';
+import SideBar from './routes/SideBar';
+import React, { useState } from 'react';
+import HeaderInfo from './components/HeaderInfo';
 import { Layout } from 'antd';
 import './css/App.css';
-import "./css/index.css";
+import './css/index.css';
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -36,7 +36,7 @@ const App = () => {
                 <HeaderInfo />
             </Header>
             <BrowserRouter>
-                <div style={{display:'flex'}}>
+                <div style={{ display: 'flex' }}>
                     {loggedIn && <SideBar user={userauth} />}
                     <Content className="ant-layout-content">
                         <Routes>
@@ -46,7 +46,7 @@ const App = () => {
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}
                             {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} />} />}
                             {loggedIn && <Route path="/bookDetails" element={<BookDetail user={userauth.token} />} />}
-                            {loggedIn && userauth.isAdmin && <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />}
+                            {loggedIn && <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />}
                             {loggedIn && <Route path="*" element={<ErrorPage />} />}
                         </Routes>
                     </Content>
