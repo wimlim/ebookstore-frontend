@@ -24,15 +24,7 @@ function getItem(
     };
 }
 
-const items: MenuItem[] = [
-    getItem('Book List', 'sub1', <BookTwoTone />, undefined, undefined, '/home'),
-    getItem('My Shopping Cart', 'sub2', <ShoppingTwoTone />, undefined, undefined, '/cart'),
-    getItem('My Orders', 'sub3', <TabletTwoTone />, undefined, undefined, '/order'),
-    getItem('My Profile', 'sub4', <SettingTwoTone />, undefined, undefined, '/profile'),
-    getItem('Book Management', 'sub5', <AppstoreAddOutlined />, undefined, undefined, '/bookManagement'), // 新添加的书籍管理菜单项
-];
-
-const SideBar: React.FC = () => {
+const SideBar: React.FC<{ user: any }> = ({ user }) => {
     const navigate = useNavigate();
 
     const onClick: MenuProps['onClick'] = (e) => {
@@ -42,7 +34,24 @@ const SideBar: React.FC = () => {
         }
     };
 
-    return <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={items} />;
+    const userItems: MenuItem[] = [
+        getItem('Book List', 'sub1', <BookTwoTone />, undefined, undefined, '/home'),
+        getItem('My Shopping Cart', 'sub2', <ShoppingTwoTone />, undefined, undefined, '/cart'),
+        getItem('My Orders', 'sub3', <TabletTwoTone />, undefined, undefined, '/order'),
+        getItem('My Profile', 'sub4', <SettingTwoTone />, undefined, undefined, '/profile'),
+    ];
+
+    const adminItems: MenuItem[] = [
+        ...userItems,
+        getItem('Book Management', 'sub5', <AppstoreAddOutlined />, undefined, undefined, '/bookManagement'),
+    ];
+
+    if (user.isAdmin == 'true') {
+        return <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={adminItems} />;
+    }
+    else {
+        return <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={userItems} />;
+    }
 };
 
 export default SideBar;
