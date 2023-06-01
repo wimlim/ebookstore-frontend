@@ -6,6 +6,8 @@ import OrderView from './views/OrderView';
 import ProfileView from './views/ProfileView';
 import BookDetail from './views/BookDetail';
 import BookManagementView from './views/BookManagementView';
+import OrderManagementView from './views/OrderManagementView';
+import UserManagementView from './views/UserManagementView';
 import ErrorPage from './views/error-page';
 import SideBar from './routes/SideBar';
 import React, { useState } from 'react';
@@ -45,9 +47,9 @@ const App = () => {
                             {loggedIn && <Route path="/cart" element={<CartView user={userauth.token} />} />}
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}
                             {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} />} />}
-                            {loggedIn && userauth.isAdmin && (
-                                <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />
-                            )}
+                            {loggedIn && <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />}
+                            {loggedIn && <Route path="/OrderManagement" element={<OrderManagementView user={userauth} />} />}
+                            {loggedIn && <Route path="/UserManagement" element={<UserManagementView user={userauth} />} />}
                             {loggedIn && <Route path="/bookDetails" element={<BookDetail user={userauth.token} />} />}
                             {loggedIn && <Route path="*" element={<ErrorPage />} />}
                         </Routes>

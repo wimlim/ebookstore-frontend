@@ -44,6 +44,8 @@ const SideBar: React.FC<{ user: any }> = ({ user }) => {
     const adminItems: MenuItem[] = [
         ...userItems,
         getItem('Book Management', 'sub5', <AppstoreAddOutlined />, undefined, undefined, '/bookManagement'),
+        getItem('Order Management', 'sub6', <AppstoreAddOutlined />, undefined, undefined, '/OrderManagement'),
+        getItem('User Management', 'sub7', <AppstoreAddOutlined />, undefined, undefined, '/UserManagement')
     ];
 
     if (user.isAdmin == 'true') {
