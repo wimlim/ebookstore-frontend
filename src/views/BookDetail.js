@@ -82,8 +82,8 @@ const BookDetail = (props) => {
         },
         {
             key: '4',
-            field: 'Year',
-            value: book?.year,
+            field: 'ISBN',
+            value: book?.isbn,
         },
         {
             key: '5',
@@ -93,7 +93,7 @@ const BookDetail = (props) => {
         {
             key: '6',
             field: 'Status',
-            value: book?.status,
+            value: book?.stock > 0 ? 'Available' : 'Unavailable',
         },
     ];
 
@@ -107,9 +107,9 @@ const BookDetail = (props) => {
                     name: bookData.title,
                     author: bookData.author,
                     language: bookData.language,
-                    year: bookData.published,
+                    isbn: bookData.isbn,
                     price: bookData.price,
-                    status: bookData.status,
+                    stock: bookData.stock,
                     description: bookData.description
                 };
                 setBook(book);
