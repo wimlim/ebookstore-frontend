@@ -10,102 +10,64 @@ class OrderManagementView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            books: [],
-            searchedBooks: [],
-            editingBookId: null,
-            editingBookTitle: '',
-            editingBookAuthor: '',
-            editingBookLanguage: '',
-            editingBookPublished: '',
-            editingBookPrice: '',
-            editingBookStatus: '',
-            editingBookDescription: '',
+            orders: [],
+            searchedOrders: [],
+            editingOrderId: null,
+            editingOrderItems: [],
             isEditing: false,
         };
     }
 
     componentDidMount() {
-        this.fetchBooks();
+        this.fetchOrders();
     }
 
-    fetchBooks = async () => {
+    fetchOrders = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/books');
-            const books = response.data;
-            this.setState({ books });
+            const response = await axios.get('http://localhost:8080/orders/all');
+            const orders = response.data;
+            this.setState({ orders });
         } catch (error) {
             console.log(error);
         }
     };
 
-    showEditModal = (book) => {
-        const {
-            id,
-            title,
-            author,
-            language,
-            published,
-            price,
-            status,
-            description,
-        } = book;
+    showEditModal = (order) => {
+        const { id, items } = order;
         this.setState({
-            editingBookId: id,
-            editingBookTitle: title,
-            editingBookAuthor: author,
-            editingBookLanguage: language,
-            editingBookPublished: published,
-            editingBookPrice: price,
-            editingBookStatus: status,
-            editingBookDescription: description,
+            editingOrderId: id,
+            editingOrderItems: items,
             isEditing: true,
         });
     };
 
     handleEditCancel = () => {
         this.setState({
-            editingBookId: null,
-            editingBookTitle: '',
-            editingBookAuthor: '',
-            editingBookLanguage: '',
-            editingBookPublished: '',
-            editingBookPrice: '',
-            editingBookStatus: '',
-            editingBookDescription: '',
+            editingOrderId: null,
+            editingOrderItems: [],
             isEditing: false,
         });
     };
 
     handleEditSave = async () => {
-        const {
-            editingBookId,
-            editingBookTitle,
-            editingBookAuthor,
-            editingBookLanguage,
-            editingBookPublished,
-            editingBookPrice,
-            editingBookStatus,
-            editingBookDescription,
-        } = this.state;
+        const { editingOrderId, editingOrderItems } = this.state;
 
-        const updatedBook = {
-            id: editingBookId.toString(),
-            title: editingBookTitle.toString(),
-            author: editingBookAuthor.toString(),
-            language: editingBookLanguage.toString(),
-            published: editingBookPublished.toString(),
-            price: editingBookPrice.toString(),
-            status: editingBookStatus.toString(),
-            description: editingBookDescription.toString(),
+        const updatedOrder = {
+            id: editingOrderId.toString(),
+            items: editingOrderItems,
         };
 
         try {
-            await axios.put(`http://localhost:8080/books/${editingBookId}`, JSON.stringify(updatedBook), {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            this.fetchBooks();
+            await axios.put(
+                `http://localhost:8080/orders/${editingOrderId}`,
+                JSON.stringify(updatedOrder),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            this.fetchOrders();
             this.handleEditCancel();
         } catch (error) {
             console.log(error);
@@ -114,8 +76,8 @@ class OrderManagementView extends Component {
 
     handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/books/${id}`);
-            this.fetchBooks();
+            await axios.delete(`http://localhost:8080/orders/${id}`);
+            this.fetchOrders();
         } catch (error) {
             console.log(error);
         }
@@ -127,27 +89,23 @@ class OrderManagementView extends Component {
     };
 
     handleSearch = (value) => {
-        const { books } = this.state;
-        const searchedBooks = books.filter((book) => book.title.includes(value));
-        this.setState({ searchedBooks });
+        const { orders } = this.state;
+        const searchedOrders = orders.filter((order) =>
+            order.items.some((item) => item.title.includes(value))
+        );
+        this.setState({ searchedOrders });
     };
 
     render() {
         const {
-            books,
-            searchedBooks,
-            editingBookId,
-            editingBookTitle,
-            editingBookAuthor,
-            editingBookLanguage,
-            editingBookPublished,
-            editingBookPrice,
-            editingBookStatus,
-            editingBookDescription,
+            orders,
+            searchedOrders,
+            editingOrderId,
+            editingOrderItems,
             isEditing,
         } = this.state;
 
-        const dataSource = searchedBooks.length > 0 ? searchedBooks : books;
+        const dataSource = searchedOrders.length > 0 ? searchedOrders : orders;
 
         return (
             <div>
@@ -155,22 +113,45 @@ class OrderManagementView extends Component {
 
                 <Table dataSource={dataSource} rowKey="id">
                     <Column title="ID" dataIndex="id" key="id" />
-                    <Column title="Title" dataIndex="title" key="title" />
-                    <Column title="Author" dataIndex="author" key="author" />
-                    <Column title="Language" dataIndex="language" key="language" />
-                    <Column title="Published" dataIndex="published" key="published" />
-                    <Column title="Price" dataIndex="price" key="price" />
-                    <Column title="Status" dataIndex="status" key="status" />
-                    <Column title="Description" dataIndex="description" key="description" />
+                    <Column
+                        title="Timestamp"
+                        dataIndex="timestamp"
+                        key="timestamp"
+                    />
+                    <Column
+                        title="User ID"
+                        dataIndex="userId"
+                        key="userId"
+                    />
+                    <Column
+                        title="Items"
+                        dataIndex="items"
+                        key="items"
+                        render={(items) => (
+                            <ul>
+                                {items.map((item) => (
+                                    <li key={item.bookId}>
+                                        Title: {item.title}, Num: {item.num}, Price: {item.price}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    />
                     <Column
                         title="Action"
                         key="action"
                         render={(text, record) => (
                             <div>
-                                <Button type="primary" onClick={() => this.showEditModal(record)}>
+                                <Button
+                                    type="primary"
+                                    onClick={() => this.showEditModal(record)}
+                                >
                                     Edit
                                 </Button>
-                                <Button type="danger" onClick={() => this.handleDelete(record.id)}>
+                                <Button
+                                    type="danger"
+                                    onClick={() => this.handleDelete(record.id)}
+                                >
                                     Delete
                                 </Button>
                             </div>
@@ -179,7 +160,7 @@ class OrderManagementView extends Component {
                 </Table>
 
                 <Modal
-                    title="Edit Book"
+                    title="Edit Order"
                     visible={isEditing}
                     onCancel={this.handleEditCancel}
                     footer={[
@@ -192,52 +173,10 @@ class OrderManagementView extends Component {
                     ]}
                 >
                     <Form>
-                        <Form.Item label="Title">
-                            <Input
-                                name="editingBookTitle"
-                                value={editingBookTitle}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Author">
-                            <Input
-                                name="editingBookAuthor"
-                                value={editingBookAuthor}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Language">
-                            <Input
-                                name="editingBookLanguage"
-                                value={editingBookLanguage}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Published">
-                            <Input
-                                name="editingBookPublished"
-                                value={editingBookPublished}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Price">
-                            <Input
-                                name="editingBookPrice"
-                                value={editingBookPrice}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Status">
-                            <Input
-                                name="editingBookStatus"
-                                value={editingBookStatus}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Description">
+                        <Form.Item label="Items">
                             <Input.TextArea
-                                name="editingBookDescription"
-                                value={editingBookDescription}
+                                name="editingOrderItems"
+                                value={editingOrderItems}
                                 onChange={this.handleInputChange}
                             />
                         </Form.Item>

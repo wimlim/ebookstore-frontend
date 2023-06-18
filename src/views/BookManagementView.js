@@ -16,14 +16,13 @@ class BookManagementView extends Component {
             editingBookTitle: '',
             editingBookAuthor: '',
             editingBookLanguage: '',
-            editingBookPublished: '',
+            editingBookIsbn: '', // Updated: Changed from "ISBN"
             editingBookPrice: '',
-            editingBookStatus: '',
+            editingBookStock: '',
             editingBookDescription: '',
             isEditing: false,
         };
     }
-
     componentDidMount() {
         this.fetchBooks();
     }
@@ -44,9 +43,9 @@ class BookManagementView extends Component {
             title,
             author,
             language,
-            published,
+            isbn, // Updated: Changed from "ISBN"
             price,
-            status,
+            stock, // Updated: Changed from "status"
             description,
         } = book;
         this.setState({
@@ -54,9 +53,9 @@ class BookManagementView extends Component {
             editingBookTitle: title,
             editingBookAuthor: author,
             editingBookLanguage: language,
-            editingBookPublished: published,
+            editingBookIsbn: isbn, // Updated: Changed from "ISBN"
             editingBookPrice: price,
-            editingBookStatus: status,
+            editingBookStock: stock, // Updated: Changed from "status"
             editingBookDescription: description,
             isEditing: true,
         });
@@ -68,9 +67,9 @@ class BookManagementView extends Component {
             editingBookTitle: '',
             editingBookAuthor: '',
             editingBookLanguage: '',
-            editingBookPublished: '',
+            editingBookIsbn: '', // Updated: Changed from "ISBN"
             editingBookPrice: '',
-            editingBookStatus: '',
+            editingBookStock: '', // Updated: Changed from "status"
             editingBookDescription: '',
             isEditing: false,
         });
@@ -82,9 +81,9 @@ class BookManagementView extends Component {
             editingBookTitle,
             editingBookAuthor,
             editingBookLanguage,
-            editingBookPublished,
+            editingBookIsbn, // Updated: Changed from "ISBN"
             editingBookPrice,
-            editingBookStatus,
+            editingBookStock, // Updated: Changed from "status"
             editingBookDescription,
         } = this.state;
 
@@ -93,9 +92,9 @@ class BookManagementView extends Component {
             title: editingBookTitle.toString(),
             author: editingBookAuthor.toString(),
             language: editingBookLanguage.toString(),
-            published: editingBookPublished.toString(),
+            isbn: editingBookIsbn.toString(), // Updated: Changed from "ISBN"
             price: editingBookPrice.toString(),
-            status: editingBookStatus.toString(),
+            stock: editingBookStock.toString(), // Updated: Changed from "status"
             description: editingBookDescription.toString(),
         };
 
@@ -140,9 +139,9 @@ class BookManagementView extends Component {
             editingBookTitle,
             editingBookAuthor,
             editingBookLanguage,
-            editingBookPublished,
+            editingBookIsbn,
             editingBookPrice,
-            editingBookStatus,
+            editingBookStock,
             editingBookDescription,
             isEditing,
         } = this.state;
@@ -158,9 +157,9 @@ class BookManagementView extends Component {
                     <Column title="Title" dataIndex="title" key="title" />
                     <Column title="Author" dataIndex="author" key="author" />
                     <Column title="Language" dataIndex="language" key="language" />
-                    <Column title="Published" dataIndex="published" key="published" />
+                    <Column title="ISBN" dataIndex="isbn" key="isbn" /> {/* Updated: Changed from "ISBN" */}
                     <Column title="Price" dataIndex="price" key="price" />
-                    <Column title="Status" dataIndex="status" key="status" />
+                    <Column title="Stock" dataIndex="stock" key="stock" />
                     <Column title="Description" dataIndex="description" key="description" />
                     <Column
                         title="Action"
@@ -213,10 +212,10 @@ class BookManagementView extends Component {
                                 onChange={this.handleInputChange}
                             />
                         </Form.Item>
-                        <Form.Item label="Published">
+                        <Form.Item label="ISBN">
                             <Input
-                                name="editingBookPublished"
-                                value={editingBookPublished}
+                                name="editingBookIsbn"
+                                value={editingBookIsbn}
                                 onChange={this.handleInputChange}
                             />
                         </Form.Item>
@@ -227,10 +226,10 @@ class BookManagementView extends Component {
                                 onChange={this.handleInputChange}
                             />
                         </Form.Item>
-                        <Form.Item label="Status">
+                        <Form.Item label="Stock">
                             <Input
-                                name="editingBookStatus"
-                                value={editingBookStatus}
+                                name="editingBookStock"
+                                value={editingBookStock}
                                 onChange={this.handleInputChange}
                             />
                         </Form.Item>
