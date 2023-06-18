@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Table, Button, Modal, Form, Input } from 'antd';
+import { Table, Button, Modal, Form, Input, DatePicker } from 'antd';
 import axios from 'axios';
 
-import SearchBar from '../components/SearchBar';
-
 const { Column } = Table;
+const { RangePicker } = DatePicker;
 
 class OrderManagementView extends Component {
     constructor(props) {
@@ -15,6 +14,8 @@ class OrderManagementView extends Component {
             editingOrderId: null,
             editingOrderItems: [],
             isEditing: false,
+            filterValue: '',
+            filterRange: null,
         };
     }
 
@@ -88,12 +89,29 @@ class OrderManagementView extends Component {
         this.setState({ [name]: value });
     };
 
-    handleSearch = (value) => {
-        const { orders } = this.state;
-        const searchedOrders = orders.filter((order) =>
-            order.items.some((item) => item.title.includes(value))
-        );
+    handleSearch = () => {
+        const { orders, filterValue, filterRange } = this.state;
+
+        const searchedOrders = orders.filter((order) => {
+            const { timestamp, items } = order;
+
+            const isTitleMatched = items.some((item) =>
+                item.title.includes(filterValue)
+            );
+
+            const isTimestampInRange = filterRange
+                ? filterRange[0].isSameOrBefore(timestamp) &&
+                filterRange[1].isSameOrAfter(timestamp)
+                : true;
+
+            return isTitleMatched && isTimestampInRange;
+        });
+
         this.setState({ searchedOrders });
+    };
+
+    handleRangeChange = (dates) => {
+        this.setState({ filterRange: dates });
     };
 
     render() {
@@ -103,26 +121,34 @@ class OrderManagementView extends Component {
             editingOrderId,
             editingOrderItems,
             isEditing,
+            filterValue,
+            filterRange,
         } = this.state;
 
         const dataSource = searchedOrders.length > 0 ? searchedOrders : orders;
 
         return (
             <div>
-                <SearchBar handleSearch={this.handleSearch} />
+                <div style={{ marginBottom: '16px' }}>
+                    <Input
+                        placeholder="Search by title"
+                        value={filterValue}
+                        onChange={(e) =>
+                            this.setState({ filterValue: e.target.value }, this.handleSearch)
+                        }
+                    />
+                    <RangePicker
+                        style={{ marginLeft: '16px' }}
+                        value={filterRange}
+                        onChange={this.handleRangeChange}
+                        onOk={this.handleSearch}
+                    />
+                </div>
 
                 <Table dataSource={dataSource} rowKey="id">
                     <Column title="ID" dataIndex="id" key="id" />
-                    <Column
-                        title="Timestamp"
-                        dataIndex="timestamp"
-                        key="timestamp"
-                    />
-                    <Column
-                        title="User ID"
-                        dataIndex="userId"
-                        key="userId"
-                    />
+                    <Column title="Timestamp" dataIndex="timestamp" key="timestamp" />
+                    <Column title="User ID" dataIndex="userId" key="userId" />
                     <Column
                         title="Items"
                         dataIndex="items"
