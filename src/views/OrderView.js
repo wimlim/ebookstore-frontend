@@ -13,7 +13,6 @@ class OrderView extends Component {
             selectedRange: null,
         };
     }
-
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/orders/${this.props.user}`);
@@ -45,8 +44,7 @@ class OrderView extends Component {
         this.setState({ selectedRange: dates });
     };
 
-    filterOrders = () => {
-        const { selectedRange, orders } = this.state;
+    filterOrders = (orders, selectedRange) => {
         if (selectedRange && selectedRange.length === 2) {
             const startDate = new Date(selectedRange[0]);
             const endDate = new Date(selectedRange[1]);
@@ -55,34 +53,34 @@ class OrderView extends Component {
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
             });
 
             const endDateFormatted = endDate.toLocaleString("en-US", {
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
             });
 
             const filteredOrders = orders.filter((order) => {
                 const timestamp = new Date(order.timestamp.replace(/[年月]/g, '/').replace('日', ''));
+                const timestampFormatted = timestamp.toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                });
                 return (
-                    timestamp >= startDate &&
-                    timestamp <= endDate
+                    timestampFormatted >= startDateFormatted &&
+                    timestampFormatted <= endDateFormatted
                 );
             });
-
             return filteredOrders;
         }
-
         return orders;
     };
 
     render() {
-        const { selectedRange } = this.state;
+        const { selectedRange, orders } = this.state;
+        const filteredOrders = this.filterOrders(orders, selectedRange);
 
         return (
             <div>
@@ -91,8 +89,8 @@ class OrderView extends Component {
                     onChange={this.handleRangeChange}
                     format="YYYY年MM月DD日"
                 />
-                <Button onClick={this.filterOrders}>Filter</Button>
-                <OrderList orders={this.filterOrders()} />
+                <Button>Statistics</Button>
+                <OrderList orders={filteredOrders} />
             </div>
         );
     }
