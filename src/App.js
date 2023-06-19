@@ -8,6 +8,7 @@ import BookDetail from './views/BookDetail';
 import BookManagementView from './views/BookManagementView';
 import OrderManagementView from './views/OrderManagementView';
 import UserManagementView from './views/UserManagementView';
+import RegisterView from './views/RegisterView';
 import ErrorPage from './views/error-page';
 import SideBar from './routes/SideBar';
 import React, { useState } from 'react';
@@ -43,6 +44,7 @@ const App = () => {
                     <Content className="ant-layout-content">
                         <Routes>
                             <Route path="/" element={<LoginView onLogin={handleLogin} />} />
+                            <Route path="/register" element={<RegisterView />} />
                             {loggedIn && <Route path="/home" element={<HomeView />} />}
                             {loggedIn && <Route path="/cart" element={<CartView user={userauth.token} />} />}
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}

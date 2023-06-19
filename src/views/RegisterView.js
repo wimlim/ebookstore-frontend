@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/login.css';
 
-const LoginView = ({ onLogin }) => {
+const RegisterView = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -60,4 +60,4 @@ const LoginView = ({ onLogin }) => {
     );
 };
 
-export default LoginView;
+export default RegisterView;

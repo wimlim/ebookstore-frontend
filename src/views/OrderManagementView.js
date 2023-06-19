@@ -18,7 +18,6 @@ class OrderManagementView extends Component {
             filterRange: null,
         };
     }
-
     componentDidMount() {
         this.fetchOrders();
     }
@@ -28,6 +27,7 @@ class OrderManagementView extends Component {
             const response = await axios.get('http://localhost:8080/orders/all');
             const orders = response.data;
             this.setState({ orders });
+            this.handleSearch();
         } catch (error) {
             console.log(error);
         }
@@ -100,9 +100,9 @@ class OrderManagementView extends Component {
             );
 
             const isTimestampInRange = filterRange
-                ? filterRange[0].isSameOrBefore(timestamp) &&
-                filterRange[1].isSameOrAfter(timestamp)
+                ? timestamp >= filterRange[0] && timestamp <= filterRange[1]
                 : true;
+
 
             return isTitleMatched && isTimestampInRange;
         });
@@ -111,12 +111,11 @@ class OrderManagementView extends Component {
     };
 
     handleRangeChange = (dates) => {
-        this.setState({ filterRange: dates });
+        this.setState({ filterRange: dates }, this.handleSearch);
     };
 
     render() {
         const {
-            orders,
             searchedOrders,
             editingOrderId,
             editingOrderItems,
@@ -125,7 +124,7 @@ class OrderManagementView extends Component {
             filterRange,
         } = this.state;
 
-        const dataSource = searchedOrders.length > 0 ? searchedOrders : orders;
+        const dataSource = searchedOrders;
 
         return (
             <div>
@@ -134,14 +133,16 @@ class OrderManagementView extends Component {
                         placeholder="Search by title"
                         value={filterValue}
                         onChange={(e) =>
-                            this.setState({ filterValue: e.target.value }, this.handleSearch)
+                            this.setState({ filterValue: e.target.value })
                         }
+                        onBlur={this.handleSearch}
                     />
                     <RangePicker
                         style={{ marginLeft: '16px' }}
                         value={filterRange}
                         onChange={this.handleRangeChange}
                         onOk={this.handleSearch}
+                        onBlur={this.handleSearch}
                     />
                 </div>
 

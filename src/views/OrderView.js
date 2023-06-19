@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
-import { Button } from 'antd';
+import { Button, DatePicker } from 'antd';
 import '../css/home.css'
-import SearchBar from "../components/SearchBar";
 import OrderList from "../components/OrderList";
 
-class CartView extends Component {
+const { RangePicker } = DatePicker;
+
+class OrderView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            orders: []
+            orders: [],
+            selectedRange: null
         };
     }
+
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/orders/${this.props.user}`);
@@ -39,15 +42,35 @@ class CartView extends Component {
         }
     }
 
+    handleRangeChange = (dates) => {
+        this.setState({ selectedRange: dates });
+    };
+
+    filterOrders = () => {
+        const { selectedRange, orders } = this.state;
+        if (selectedRange && selectedRange.length === 2) {
+            const [startDate, endDate] = selectedRange;
+            const filteredOrders = orders.filter(order => {
+                alert(order.timestamp)
+                const orderDate = new Date(order.timestamp);
+                return orderDate >= startDate && orderDate <= endDate;
+            });
+            return filteredOrders;
+        }
+        return orders;
+    };
 
     render() {
+        const { selectedRange } = this.state;
 
         return (
             <div>
-                <OrderList orders={this.state.orders}/>
+                <RangePicker value={selectedRange} onChange={this.handleRangeChange} />
+                <Button onClick={this.filterOrders}>Filter</Button>
+                <OrderList orders={this.filterOrders()} />
             </div>
         );
     }
 }
 
-export default CartView;
+export default OrderView;
