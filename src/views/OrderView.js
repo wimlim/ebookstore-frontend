@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, DatePicker } from 'antd';
-import '../css/home.css'
-import OrderList from "../components/OrderList";
+import '../css/home.css';
+import OrderList from '../components/OrderList';
 
 const { RangePicker } = DatePicker;
 
@@ -10,7 +10,7 @@ class OrderView extends Component {
         super(props);
         this.state = {
             orders: [],
-            selectedRange: null
+            selectedRange: null,
         };
     }
 
@@ -21,20 +21,19 @@ class OrderView extends Component {
                 throw new Error(`${res.status} ${res.statusText}`);
             }
             const json = await res.json();
-            const orders = [];
-            for (const timestampObj of json) {
+            const orders = json.map((timestampObj) => {
                 const timestamp = timestampObj.timestamp;
-                const items = timestampObj.items.map(item => ({
+                const items = timestampObj.items.map((item) => ({
                     id: item.bookId,
                     title: item.title,
                     amount: item.num,
-                    price: item.price
+                    price: item.price,
                 }));
-                orders.push({
+                return {
                     timestamp,
-                    items
-                });
-            }
+                    items,
+                };
+            });
             this.setState({ orders });
         } catch (err) {
             console.error('Error fetching data:', err);
@@ -49,14 +48,36 @@ class OrderView extends Component {
     filterOrders = () => {
         const { selectedRange, orders } = this.state;
         if (selectedRange && selectedRange.length === 2) {
-            const [startDate, endDate] = selectedRange;
-            const filteredOrders = orders.filter(order => {
-                alert(order.timestamp)
-                const orderDate = new Date(order.timestamp);
-                return orderDate >= startDate && orderDate <= endDate;
+            const startDate = new Date(selectedRange[0]);
+            const endDate = new Date(selectedRange[1]);
+
+            const startDateFormatted = startDate.toLocaleString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
             });
+
+            const endDateFormatted = endDate.toLocaleString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+
+            const filteredOrders = orders.filter((order) => {
+                const timestamp = new Date(order.timestamp.replace(/[年月]/g, '/').replace('日', ''));
+                return (
+                    timestamp >= startDate &&
+                    timestamp <= endDate
+                );
+            });
+
             return filteredOrders;
         }
+
         return orders;
     };
 
@@ -65,7 +86,11 @@ class OrderView extends Component {
 
         return (
             <div>
-                <RangePicker value={selectedRange} onChange={this.handleRangeChange} />
+                <RangePicker
+                    value={selectedRange}
+                    onChange={this.handleRangeChange}
+                    format="YYYY年MM月DD日"
+                />
                 <Button onClick={this.filterOrders}>Filter</Button>
                 <OrderList orders={this.filterOrders()} />
             </div>
