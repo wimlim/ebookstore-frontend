@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Table, Button, Modal, Form, Input, DatePicker } from 'antd';
+import { Table, Input, DatePicker, Modal, Button } from 'antd';
 import axios from 'axios';
+import { filterOrders } from '../utils/OrderUtil';
 
 const { Column } = Table;
 const { RangePicker } = DatePicker;
@@ -11,119 +12,106 @@ class OrderManagementView extends Component {
         this.state = {
             orders: [],
             searchedOrders: [],
-            editingOrderId: null,
-            editingOrderItems: [],
-            isEditing: false,
             filterValue: '',
             filterRange: null,
+            showModal: false,
+            statistics: null,
         };
     }
+
     componentDidMount() {
         this.fetchOrders();
     }
 
     fetchOrders = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/orders/all');
-            const orders = response.data;
+            const res = await fetch(`http://localhost:8080/orders/all`);
+            if (!res.ok) {
+                throw new Error(`${res.status} ${res.statusText}`);
+            }
+            const json = await res.json();
+            const orders = json.map((timestampObj) => {
+                const timestamp = timestampObj.timestamp;
+                const items = timestampObj.items.map((item) => ({
+                    id: item.bookId,
+                    title: item.title,
+                    amount: item.num,
+                    price: item.price,
+                }));
+                return {
+                    id: timestampObj.id,
+                    userId: timestampObj.userId,
+                    timestamp,
+                    items,
+                };
+            });
             this.setState({ orders });
             this.handleSearch();
         } catch (error) {
-            console.log(error);
+            console.log("Error fetching data:", error);
+            alert("Failed to fetch data. Please try again later.");
         }
     };
 
-    showEditModal = (order) => {
-        const { id, items } = order;
-        this.setState({
-            editingOrderId: id,
-            editingOrderItems: items,
-            isEditing: true,
-        });
+    handleInputChange = (e) => {
+        this.setState({ filterValue: e.target.value });
     };
 
-    handleEditCancel = () => {
-        this.setState({
-            editingOrderId: null,
-            editingOrderItems: [],
-            isEditing: false,
-        });
-    };
-
-    handleEditSave = async () => {
-        const { editingOrderId, editingOrderItems } = this.state;
-
-        const updatedOrder = {
-            id: editingOrderId.toString(),
-            items: editingOrderItems,
-        };
-
-        try {
-            await axios.put(
-                `http://localhost:8080/orders/${editingOrderId}`,
-                JSON.stringify(updatedOrder),
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            this.fetchOrders();
-            this.handleEditCancel();
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://localhost:8080/orders/${id}`);
-            this.fetchOrders();
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    handleInputChange = (event) => {
-        const { name, value } = event.target;
-        this.setState({ [name]: value });
+    handleRangeChange = (dates) => {
+        this.setState({ filterRange: dates });
     };
 
     handleSearch = () => {
         const { orders, filterValue, filterRange } = this.state;
+        let searchedOrders = [...orders];
 
-        const searchedOrders = orders.filter((order) => {
-            const { timestamp, items } = order;
-
-            const isTitleMatched = items.some((item) =>
-                item.title.includes(filterValue)
+        if (filterValue) {
+            searchedOrders = searchedOrders.filter((order) =>
+                order.items.some((item) => item.title.toLowerCase().includes(filterValue.toLowerCase()))
             );
+        }
 
-            const isTimestampInRange = filterRange
-                ? timestamp >= filterRange[0] && timestamp <= filterRange[1]
-                : true;
-
-
-            return isTitleMatched && isTimestampInRange;
-        });
+        if (filterRange && filterRange.length === 2) {
+            searchedOrders = filterOrders(searchedOrders, filterRange);
+        }
 
         this.setState({ searchedOrders });
     };
 
-    handleRangeChange = (dates) => {
-        this.setState({ filterRange: dates }, this.handleSearch);
+    handleShowStatistics = () => {
+        const { searchedOrders } = this.state;
+        // Calculate statistics
+        let bookCount = {};
+        let totalCount = 0;
+        let totalPrice = 0;
+
+        searchedOrders.forEach((order) => {
+            order.items.forEach((item) => {
+                if (bookCount[item.id]) {
+                    bookCount[item.id] += item.amount;
+                } else {
+                    bookCount[item.id] = item.amount;
+                }
+                totalCount += item.amount;
+                totalPrice += item.price * item.amount;
+            });
+        });
+
+        const statistics = {
+            bookCount,
+            totalCount,
+            totalPrice,
+        };
+
+        this.setState({ statistics, showModal: true });
+    };
+
+    handleCloseModal = () => {
+        this.setState({ showModal: false });
     };
 
     render() {
-        const {
-            searchedOrders,
-            editingOrderId,
-            editingOrderItems,
-            isEditing,
-            filterValue,
-            filterRange,
-        } = this.state;
-
+        const { searchedOrders, filterValue, filterRange, showModal, statistics } = this.state;
         const dataSource = searchedOrders;
 
         return (
@@ -132,9 +120,8 @@ class OrderManagementView extends Component {
                     <Input
                         placeholder="Search by title"
                         value={filterValue}
-                        onChange={(e) =>
-                            this.setState({ filterValue: e.target.value })
-                        }
+                        name="filterValue"
+                        onChange={this.handleInputChange}
                         onBlur={this.handleSearch}
                     />
                     <RangePicker
@@ -144,6 +131,9 @@ class OrderManagementView extends Component {
                         onOk={this.handleSearch}
                         onBlur={this.handleSearch}
                     />
+                    <Button type="primary" onClick={this.handleShowStatistics}>
+                        Show Statistics
+                    </Button>
                 </div>
 
                 <Table dataSource={dataSource} rowKey="id">
@@ -157,57 +147,30 @@ class OrderManagementView extends Component {
                         render={(items) => (
                             <ul>
                                 {items.map((item) => (
-                                    <li key={item.bookId}>
-                                        Title: {item.title}, Num: {item.num}, Price: {item.price}
+                                    <li key={item.id}>
+                                        Title: {item.title}, Num: {item.amount}, Price: {item.price}
                                     </li>
                                 ))}
                             </ul>
                         )}
                     />
-                    <Column
-                        title="Action"
-                        key="action"
-                        render={(text, record) => (
-                            <div>
-                                <Button
-                                    type="primary"
-                                    onClick={() => this.showEditModal(record)}
-                                >
-                                    Edit
-                                </Button>
-                                <Button
-                                    type="danger"
-                                    onClick={() => this.handleDelete(record.id)}
-                                >
-                                    Delete
-                                </Button>
-                            </div>
-                        )}
-                    />
                 </Table>
 
-                <Modal
-                    title="Edit Order"
-                    visible={isEditing}
-                    onCancel={this.handleEditCancel}
-                    footer={[
-                        <Button key="cancel" onClick={this.handleEditCancel}>
-                            Cancel
-                        </Button>,
-                        <Button key="save" type="primary" onClick={this.handleEditSave}>
-                            Save
-                        </Button>,
-                    ]}
-                >
-                    <Form>
-                        <Form.Item label="Items">
-                            <Input.TextArea
-                                name="editingOrderItems"
-                                value={editingOrderItems}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                    </Form>
+                <Modal title="Statistics" visible={showModal} onCancel={this.handleCloseModal} footer={null}>
+                    {statistics && (
+                        <div>
+                            <h4>Book Count:</h4>
+                            <ul>
+                                {Object.keys(statistics.bookCount).map((bookId) => (
+                                    <li key={bookId}>
+                                        Book ID: {bookId}, Count: {statistics.bookCount[bookId]}
+                                    </li>
+                                ))}
+                            </ul>
+                            <p>Total Count: {statistics.totalCount}</p>
+                            <p>Total Price: {statistics.totalPrice}</p>
+                        </div>
+                    )}
                 </Modal>
             </div>
         );
