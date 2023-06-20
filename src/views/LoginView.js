@@ -15,7 +15,10 @@ const LoginView = ({ onLogin }) => {
                 body: JSON.stringify({ account: username, password })
             });
             const data = await response.text();
-            if (data !== '') {
+            if (data == 'banned') {
+                alert('You have been banned.');
+            }
+            else if (data !== '') {
                 const [token, isAdmin] = data.split(",");
                 const tokenAndAdmin = { token, isAdmin };
                 onLogin(tokenAndAdmin);
