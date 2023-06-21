@@ -12,34 +12,36 @@ class ProfileView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            avatarSrc: require("../assets/avatar.jpg"),
+            avatarSrc: null,
+            avatarFile: null,
             firstname: "",
             lastname: "",
             twitter: "",
             notes: "",
         };
-    }async componentDidMount() {
-    try {
-        const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
-        const data = await response.json();
-        if (response.ok) {
-            const { firstname, lastname, twitter, notes } = data;
-            // 更新组件状态
-            this.setState({ firstname, lastname, twitter, notes });
-        } else {
-            console.log(data.error);
-        }
-    } catch (error) {
-        console.log(error);
     }
-}
 
-    handleAvatarChange = (newSrc) => {
-        this.setState({ avatarSrc: newSrc });
+    async componentDidMount() {
+        try {
+            const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
+            const data = await response.json();
+            if (response.ok) {
+                const { firstname, lastname, twitter, notes, avatarUrl } = data;
+                this.setState({ firstname, lastname, twitter, notes, avatarSrc: avatarUrl });
+            } else {
+                console.log(data.error);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    handleAvatarChange = (file) => {
+        this.setState({ avatarFile: file });
     };
 
     handleSave = async () => {
-        const { firstname, lastname, twitter, notes } = this.state;
+        const { avatarFile, firstname, lastname, twitter, notes } = this.state;
         const payload = {
             firstname,
             lastname,
@@ -47,12 +49,15 @@ class ProfileView extends Component {
             notes,
         };
 
+        if (avatarFile) {
+            const formData = new FormData();
+            formData.append('avatar', avatarFile);
+            payload.avatar = formData;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(payload),
             });
 
@@ -69,13 +74,13 @@ class ProfileView extends Component {
     };
 
     handleCancel = () => {
-        // Reset the form fields to their original values
         const { firstname, lastname, twitter, notes } = this.state;
         this.setState({
             firstname,
             lastname,
             twitter,
             notes,
+            avatarFile: null,
         });
     };
 
@@ -108,9 +113,14 @@ class ProfileView extends Component {
                     <AvatarUpload src={avatarSrc} onChange={this.handleAvatarChange} />
                     <NotesInput notes={notes} onChange={this.handleNotesChange} />
                 </Form>
+
                 <div className="button-wrapper">
-                    <Button type="primary" onClick={this.handleSave}>Save</Button>
-                    <Button style={{ marginLeft: '8px' }} onClick={this.handleCancel}>Cancel</Button>
+                    <Button type="primary" onClick={this.handleSave}>
+                        Save
+                    </Button>
+                    <Button style={{ marginLeft: '8px' }} onClick={this.handleCancel}>
+                        Cancel
+                    </Button>
                 </div>
             </div>
         );
