@@ -15,10 +15,13 @@ class OrderManagementView extends Component {
             filterRange: null,
             showModal: false,
             statistics: null,
+            userConsumption: null,
         };
-    }componentDidMount() {
-    this.fetchOrders();
-}
+    }
+
+    componentDidMount() {
+        this.fetchOrders();
+    }
 
     fetchOrders = async () => {
         try {
@@ -103,7 +106,16 @@ class OrderManagementView extends Component {
             totalPrice,
         };
 
-        this.setState({ statistics, showModal: true });
+        const userConsumption = searchedOrders.reduce((acc, order) => {
+            if (acc[order.userId]) {
+                acc[order.userId] += order.items.reduce((total, item) => total + item.price * item.amount, 0);
+            } else {
+                acc[order.userId] = order.items.reduce((total, item) => total + item.price * item.amount, 0);
+            }
+            return acc;
+        }, {});
+
+        this.setState({ statistics, userConsumption, showModal: true });
     };
 
     handleCloseModal = () => {
@@ -111,7 +123,7 @@ class OrderManagementView extends Component {
     };
 
     render() {
-        const { searchedOrders, filterValue, filterRange, showModal, statistics } = this.state;
+        const { searchedOrders, filterValue, filterRange, showModal, statistics, userConsumption } = this.state;
         const dataSource = searchedOrders;
 
         return (
@@ -139,6 +151,7 @@ class OrderManagementView extends Component {
                 {statistics && (
                     <Modal title="Statistics" visible={showModal} onCancel={this.handleCloseModal} footer={null}>
                         <div>
+                            <h2>Book Sales Ranking</h2>
                             <table>
                                 <thead>
                                 <tr>
@@ -151,6 +164,26 @@ class OrderManagementView extends Component {
                                     <tr key={bookId}>
                                         <td>{bookId}</td>
                                         <td>{count}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <h2>User Consumption Ranking</h2>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Consumption</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {Object.entries(userConsumption).map(([userId, consumption]) => (
+                                    <tr key={userId}>
+                                        <td>{userId}</td>
+                                        <td>{consumption}</td>
                                     </tr>
                                 ))}
                                 </tbody>
