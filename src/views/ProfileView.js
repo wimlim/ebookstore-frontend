@@ -54,37 +54,44 @@ class ProfileView extends Component {
 
     handleSave = async () => {
         const { avatarFile, firstname, lastname, twitter, notes } = this.state;
-        const payload = {
-            firstname,
-            lastname,
-            twitter,
-            notes,
-        };
-
-        if (avatarFile) {
-            const formData = new FormData();
-            formData.append('avatar', avatarFile);
-            payload.avatar = formData;
-        }
-
         try {
-            const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
+            const profileResponse = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
                 method: 'PUT',
-                body: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstname,
+                    lastname,
+                    twitter,
+                    notes
+                })
             });
-
-            if (response.ok) {
-                message.success('Profile saved successfully');
-            } else {
-                const error = await response.json();
-                message.error(error.message);
+            if (!profileResponse.ok) {
+                const errorData = await profileResponse.json();
+                console.log(errorData.error);
+                return;
             }
+            if (avatarFile) {
+                const formData = new FormData();
+                formData.append('avatar', avatarFile);
+
+                const avatarResponse = await fetch(`http://localhost:8080/users/avatar/${this.props.user}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (!avatarResponse.ok) {
+                    const errorData = await avatarResponse.json();
+                    console.log(errorData.error);
+                    return;
+                }
+            }
+            message.success('Profile saved successfully');
         } catch (error) {
             console.log(error);
-            message.error('Failed to save profile');
         }
     };
-
     handleCancel = () => {
         const { firstname, lastname, twitter, notes } = this.state;
         this.setState({
