@@ -16,7 +16,6 @@ class OrderView extends Component {
             statistics: null,
         };
     }
-
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/orders/${this.props.user}`);
@@ -26,6 +25,7 @@ class OrderView extends Component {
             const json = await res.json();
             const orders = json.map((timestampObj) => {
                 const timestamp = timestampObj.timestamp;
+                const id = timestampObj.id;
                 const items = timestampObj.items.map((item) => ({
                     id: item.bookId,
                     title: item.title,
@@ -33,6 +33,7 @@ class OrderView extends Component {
                     price: item.price,
                 }));
                 return {
+                    id,
                     timestamp,
                     items,
                 };
@@ -108,11 +109,14 @@ class OrderView extends Component {
                         <div>
                             <h4>Book Count:</h4>
                             <ul>
-                                {Object.keys(statistics.bookCount).map((bookId) => (
-                                    <li key={bookId}>
-                                        Book ID: {bookId}, Count: {statistics.bookCount[bookId]}
-                                    </li>
-                                ))}
+                                {Object.keys(statistics.bookCount).map((bookId) => {
+                                    const order = filteredOrders.find((order) => order.items.some((item) => item.id === bookId));
+                                    return (
+                                        <li key={bookId}>
+                                            Order ID: {order.id}, Book ID: {bookId}, Count: {statistics.bookCount[bookId]}
+                                        </li>
+                                    );
+                                })}
                             </ul>
                             <p>Total Count: {statistics.totalCount}</p>
                             <p>Total Price: {statistics.totalPrice}</p>
@@ -123,5 +127,4 @@ class OrderView extends Component {
         );
     }
 }
-
 export default OrderView;
