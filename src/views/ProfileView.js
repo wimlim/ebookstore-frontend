@@ -12,7 +12,7 @@ class ProfileView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            avatarSrc: null,
+            avatarSrc: "",
             avatarFile: null,
             firstname: "",
             lastname: "",
@@ -20,16 +20,28 @@ class ProfileView extends Component {
             notes: "",
         };
     }
-
     async componentDidMount() {
         try {
             const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
             const data = await response.json();
             if (response.ok) {
-                const { firstname, lastname, twitter, notes, avatarUrl } = data;
-                this.setState({ firstname, lastname, twitter, notes, avatarSrc: avatarUrl });
+                const { firstname, lastname, twitter, notes } = data;
+                this.setState({ firstname, lastname, twitter, notes });
             } else {
                 console.log(data.error);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        try {
+            const imageResponse = await fetch(`http://localhost:8080/users/avatar/${this.props.user}`);
+            if (imageResponse.ok) {
+                const imageBlob = await imageResponse.blob();
+                const imageUrl = URL.createObjectURL(imageBlob);
+                this.setState({ avatarSrc: imageUrl });
+            } else {
+                console.log(imageResponse.error);
             }
         } catch (error) {
             console.log(error);

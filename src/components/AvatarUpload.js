@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Avatar, Upload } from 'antd';
+import { Typography, Avatar, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 
@@ -11,6 +11,9 @@ const AvatarUpload = ({ src, onChange }) => {
             const newSrc = URL.createObjectURL(info.file.originFileObj);
             setTempSrc(newSrc);
             onChange(info.file.originFileObj);
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
         }
     };
 
