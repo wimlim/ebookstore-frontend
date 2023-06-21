@@ -15,10 +15,10 @@ const AvatarUpload = ({user, src, onChange }) => {
             // 使用上传的图片文件更新状态
             onChange(info.file.originFileObj);
             setTempSrc(null); // 清除临时预览图像
-            message.success('图片上传成功');
+            message.success('upload successfully.');
         }
         if (info.file.status === 'error') {
-            message.error('图片上传失败');
+            //message.error('图片上传失败');
         }
     };
 
@@ -28,8 +28,8 @@ const AvatarUpload = ({user, src, onChange }) => {
             <Avatar shape="square" size={128} src={tempSrc || src} style={{ marginBottom: '24px' }} />
             <Upload
                 name="avatar"
-                action="http://localhost:8080/users/avatar{user}"
-                method="POST"
+                action={`http://localhost:8080/users/avatar/${user}`}
+                method="PUT"
                 onChange={handleUpload}
             >
                 <UploadOutlined /> 上传头像
