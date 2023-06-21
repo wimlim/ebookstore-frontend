@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Avatar, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+
 const { Title } = Typography;
 
 const AvatarUpload = ({ user, src, onChange }) => {
@@ -16,7 +17,6 @@ const AvatarUpload = ({ user, src, onChange }) => {
             message.success('上传成功');
         }
         if (info.file.status === 'error') {
-            message.error('上传失败');
         }
     };
 
@@ -30,7 +30,7 @@ const AvatarUpload = ({ user, src, onChange }) => {
         })
             .then((response) => {
                 if (response.ok) {
-                    onSuccess(null, response);
+                    onSuccess(response);
                 } else {
                     throw new Error(response.statusText);
                 }
