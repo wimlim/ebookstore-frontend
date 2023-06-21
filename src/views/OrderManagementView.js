@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Table, Input, DatePicker, Modal, Button } from 'antd';
-import axios from 'axios';
 import { filterOrders } from '../utils/OrderUtil';
 
 const { Column } = Table;
@@ -17,11 +16,9 @@ class OrderManagementView extends Component {
             showModal: false,
             statistics: null,
         };
-    }
-
-    componentDidMount() {
-        this.fetchOrders();
-    }
+    }componentDidMount() {
+    this.fetchOrders();
+}
 
     fetchOrders = async () => {
         try {
@@ -97,8 +94,11 @@ class OrderManagementView extends Component {
             });
         });
 
+        // Sort bookCount object by value in descending order
+        const sortedBookCount = Object.entries(bookCount).sort((a, b) => b[1] - a[1]);
+
         const statistics = {
-            bookCount,
+            bookCount: sortedBookCount,
             totalCount,
             totalPrice,
         };
@@ -136,6 +136,29 @@ class OrderManagementView extends Component {
                     </Button>
                 </div>
 
+                {statistics && (
+                    <Modal title="Statistics" visible={showModal} onCancel={this.handleCloseModal} footer={null}>
+                        <div>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Book ID</th>
+                                    <th>Count</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {statistics.bookCount.map(([bookId, count]) => (
+                                    <tr key={bookId}>
+                                        <td>{bookId}</td>
+                                        <td>{count}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Modal>
+                )}
+
                 <Table dataSource={dataSource} rowKey="id">
                     <Column title="ID" dataIndex="id" key="id" />
                     <Column title="Timestamp" dataIndex="timestamp" key="timestamp" />
@@ -155,23 +178,6 @@ class OrderManagementView extends Component {
                         )}
                     />
                 </Table>
-
-                <Modal title="Statistics" visible={showModal} onCancel={this.handleCloseModal} footer={null}>
-                    {statistics && (
-                        <div>
-                            <h4>Book Count:</h4>
-                            <ul>
-                                {Object.keys(statistics.bookCount).map((bookId) => (
-                                    <li key={bookId}>
-                                        Book ID: {bookId}, Count: {statistics.bookCount[bookId]}
-                                    </li>
-                                ))}
-                            </ul>
-                            <p>Total Count: {statistics.totalCount}</p>
-                            <p>Total Price: {statistics.totalPrice}</p>
-                        </div>
-                    )}
-                </Modal>
             </div>
         );
     }
