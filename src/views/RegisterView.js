@@ -12,16 +12,22 @@ const RegisterView = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // 校验用户名是否重复
-        // 在这里添加校验用户名的逻辑，比如向后端发送请求检查用户名是否已存在
-
         // 校验两次输入的密码是否相同
         if (password !== confirmPassword) {
             alert('Passwords do not match');
             return;
         }
+        if (username === '' || password === '' || confirmPassword === '' || email === '') {
+            alert('Please fill in all the fields');
+            return;
+        }
+        // 校验密码格式
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
+        if (!passwordRegex.test(password)) {
+            alert('Password must be 8 to 16 characters long, contain at least one number, one lowercase and one uppercase letter');
+            return;
+        }
 
-        // 校验邮箱格式是否正确
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(email)) {
             alert('Invalid email format');
@@ -36,11 +42,12 @@ const RegisterView = () => {
             });
             const data = await response.text();
             // 处理注册成功或失败的逻辑
-            if (data === 'success') {
+            if (data === 'Register successfully') {
                 alert('Registration successful');
                 navigate('/login'); // 注册成功后跳转到登录页面
             } else {
-                alert('Registration failed');
+                if (data === "Username already exists")
+                    alert('Username already exists');
             }
         } catch (error) {
             console.log(error);

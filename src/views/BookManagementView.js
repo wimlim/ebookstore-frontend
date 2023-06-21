@@ -43,9 +43,9 @@ class BookManagementView extends Component {
             title,
             author,
             language,
-            isbn, // Updated: Changed from "ISBN"
+            isbn,
             price,
-            stock, // Updated: Changed from "status"
+            stock,
             description,
         } = book;
         this.setState({
@@ -53,9 +53,9 @@ class BookManagementView extends Component {
             editingBookTitle: title,
             editingBookAuthor: author,
             editingBookLanguage: language,
-            editingBookIsbn: isbn, // Updated: Changed from "ISBN"
+            editingBookIsbn: isbn,
             editingBookPrice: price,
-            editingBookStock: stock, // Updated: Changed from "status"
+            editingBookStock: stock,
             editingBookDescription: description,
             isEditing: true,
         });
@@ -67,9 +67,9 @@ class BookManagementView extends Component {
             editingBookTitle: '',
             editingBookAuthor: '',
             editingBookLanguage: '',
-            editingBookIsbn: '', // Updated: Changed from "ISBN"
+            editingBookIsbn: '',
             editingBookPrice: '',
-            editingBookStock: '', // Updated: Changed from "status"
+            editingBookStock: '',
             editingBookDescription: '',
             isEditing: false,
         });
@@ -83,7 +83,7 @@ class BookManagementView extends Component {
             editingBookLanguage,
             editingBookIsbn, // Updated: Changed from "ISBN"
             editingBookPrice,
-            editingBookStock, // Updated: Changed from "status"
+            editingBookStock,
             editingBookDescription,
         } = this.state;
 
@@ -155,6 +155,18 @@ class BookManagementView extends Component {
                 <Table dataSource={dataSource} rowKey="id">
                     <Column title="ID" dataIndex="id" key="id" />
                     <Column title="Title" dataIndex="title" key="title" />
+                    <Column
+                        title="Cover"
+                        dataIndex="id"
+                        key="cover"
+                        render={(id) => (
+                            <img
+                                src={`http://localhost:8080/books/image/${id}`}
+                                alt="Book Cover"
+                                style={{ width: '100px', height: 'auto' }}
+                            />
+                        )}
+                    />
                     <Column title="Author" dataIndex="author" key="author" />
                     <Column title="Language" dataIndex="language" key="language" />
                     <Column title="ISBN" dataIndex="isbn" key="isbn" /> {/* Updated: Changed from "ISBN" */}
