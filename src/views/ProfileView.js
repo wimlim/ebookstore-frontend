@@ -54,6 +54,7 @@ class ProfileView extends Component {
 
     handleSave = async () => {
         const { avatarFile, firstname, lastname, twitter, notes } = this.state;
+
         try {
             const profileResponse = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
                 method: 'PUT',
@@ -73,14 +74,13 @@ class ProfileView extends Component {
                 return;
             }
             if (avatarFile) {
+                alert("hahaha")
                 const formData = new FormData();
                 formData.append('avatar', avatarFile);
-
                 const avatarResponse = await fetch(`http://localhost:8080/users/avatar/${this.props.user}`, {
                     method: 'PUT',
                     body: formData
                 });
-
                 if (!avatarResponse.ok) {
                     const errorData = await avatarResponse.json();
                     console.log(errorData.error);
@@ -92,6 +92,7 @@ class ProfileView extends Component {
             console.log(error);
         }
     };
+
     handleCancel = () => {
         const { firstname, lastname, twitter, notes } = this.state;
         this.setState({
