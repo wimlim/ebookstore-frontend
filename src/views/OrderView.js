@@ -16,6 +16,7 @@ class OrderView extends Component {
             statistics: null,
         };
     }
+
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/orders/${this.props.user}`);
@@ -52,9 +53,8 @@ class OrderView extends Component {
     handleStatistics = () => {
         const { orders, selectedRange } = this.state;
         if (selectedRange && selectedRange.length === 2) {
-            const filteredOrders = filterOrders(orders, selectedRange); // 使用提取的filterOrders函数
+            const filteredOrders = filterOrders(orders, selectedRange);
 
-            // Calculate statistics
             let bookCount = {};
             let totalCount = 0;
             let totalPrice = 0;
@@ -87,7 +87,7 @@ class OrderView extends Component {
 
     render() {
         const { selectedRange, orders, showModal, statistics } = this.state;
-        const filteredOrders = filterOrders(orders, selectedRange); // 使用提取的filterOrders函数
+        const filteredOrders = filterOrders(orders, selectedRange) || []; // 处理filteredOrders为undefined的情况
 
         return (
             <div>
@@ -110,10 +110,13 @@ class OrderView extends Component {
                             <h4>Book Count:</h4>
                             <ul>
                                 {Object.keys(statistics.bookCount).map((bookId) => {
-                                    const order = filteredOrders.find((order) => order.items.some((item) => item.id === bookId));
+                                    const order = filteredOrders.find((order) =>
+                                        order.items.some((item) => item.id === bookId)
+                                    );
                                     return (
                                         <li key={bookId}>
-                                            Order ID: {order.id}, Book ID: {bookId}, Count: {statistics.bookCount[bookId]}
+                                            Order ID: {order?.id}, Book ID: {bookId},{" "}
+                                            Count: {statistics.bookCount[bookId]}
                                         </li>
                                     );
                                 })}
@@ -127,4 +130,5 @@ class OrderView extends Component {
         );
     }
 }
+
 export default OrderView;
