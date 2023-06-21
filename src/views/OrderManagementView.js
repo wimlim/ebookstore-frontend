@@ -152,42 +152,32 @@ class OrderManagementView extends Component {
                     <Modal title="Statistics" visible={showModal} onCancel={this.handleCloseModal} footer={null}>
                         <div>
                             <h2>Book Sales Ranking</h2>
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>Book ID</th>
-                                    <th>Count</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {statistics.bookCount.map(([bookId, count]) => (
-                                    <tr key={bookId}>
-                                        <td>{bookId}</td>
-                                        <td>{count}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                            <Table
+                                dataSource={statistics.bookCount}
+                                pagination={false}
+                                size="small"
+                                style={{ marginBottom: '16px' }}
+                            >
+                                <Column title="Book ID" dataIndex="0" key="bookId" />
+                                <Column title="Count" dataIndex="1" key="count" />
+                            </Table>
                         </div>
 
                         <div>
                             <h2>User Consumption Ranking</h2>
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>User ID</th>
-                                    <th>Consumption</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {Object.entries(userConsumption).map(([userId, consumption]) => (
-                                    <tr key={userId}>
-                                        <td>{userId}</td>
-                                        <td>{consumption}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                            <Table
+                                dataSource={Object.entries(userConsumption)}
+                                pagination={false}
+                                size="small"
+                            >
+                                <Column title="User ID" dataIndex="0" key="userId" />
+                                <Column
+                                    title="Consumption"
+                                    dataIndex="1"
+                                    key="consumption"
+                                    render={(value) => <span>${value.toFixed(2)}</span>}
+                                />
+                            </Table>
                         </div>
                     </Modal>
                 )}
