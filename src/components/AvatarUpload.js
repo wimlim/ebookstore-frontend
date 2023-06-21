@@ -3,7 +3,7 @@ import { Typography, Avatar, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 
-const AvatarUpload = ({ src, onChange }) => {
+const AvatarUpload = ({user, src, onChange }) => {
     const [tempSrc, setTempSrc] = useState(null);
 
     const handleUpload = (info) => {
@@ -28,7 +28,7 @@ const AvatarUpload = ({ src, onChange }) => {
             <Avatar shape="square" size={128} src={tempSrc || src} style={{ marginBottom: '24px' }} />
             <Upload
                 name="avatar"
-                action="http://localhost:8080/users/uploadAvatar"
+                action="http://localhost:8080/users/avatar{user}"
                 method="POST"
                 onChange={handleUpload}
             >

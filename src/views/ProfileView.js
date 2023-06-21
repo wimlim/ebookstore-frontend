@@ -13,13 +13,13 @@ class ProfileView extends Component {
         super(props);
         this.state = {
             avatarSrc: "",
-            avatarFile: null,
             firstname: "",
             lastname: "",
             twitter: "",
             notes: "",
         };
     }
+
     async componentDidMount() {
         try {
             const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
@@ -53,7 +53,7 @@ class ProfileView extends Component {
     };
 
     handleSave = async () => {
-        const { avatarFile, firstname, lastname, twitter, notes } = this.state;
+        const { firstname, lastname, twitter, notes } = this.state;
 
         try {
             const profileResponse = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
@@ -72,20 +72,6 @@ class ProfileView extends Component {
                 const errorData = await profileResponse.json();
                 console.log(errorData.error);
                 return;
-            }
-            if (avatarFile) {
-                alert("hahaha")
-                const formData = new FormData();
-                formData.append('avatar', avatarFile);
-                const avatarResponse = await fetch(`http://localhost:8080/users/avatar/${this.props.user}`, {
-                    method: 'PUT',
-                    body: formData
-                });
-                if (!avatarResponse.ok) {
-                    const errorData = await avatarResponse.json();
-                    console.log(errorData.error);
-                    return;
-                }
             }
             message.success('Profile saved successfully');
         } catch (error) {
@@ -130,7 +116,7 @@ class ProfileView extends Component {
                 <TwitterForm twitter={twitter} onChange={this.handleTwitterChange} />
 
                 <Form layout="inline">
-                    <AvatarUpload src={avatarSrc} onChange={this.handleAvatarChange} />
+                    <AvatarUpload user={this.props.user} src={avatarSrc} onChange={this.handleAvatarChange} />
                     <NotesInput notes={notes} onChange={this.handleNotesChange} />
                 </Form>
 
