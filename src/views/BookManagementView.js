@@ -16,13 +16,15 @@ class BookManagementView extends Component {
             editingBookTitle: '',
             editingBookAuthor: '',
             editingBookLanguage: '',
-            editingBookIsbn: '', // Updated: Changed from "ISBN"
+            editingBookIsbn: '',
             editingBookPrice: '',
             editingBookStock: '',
             editingBookDescription: '',
             isEditing: false,
+            isAdding: false,
         };
     }
+
     componentDidMount() {
         this.fetchBooks();
     }
@@ -58,6 +60,7 @@ class BookManagementView extends Component {
             editingBookStock: stock,
             editingBookDescription: description,
             isEditing: true,
+            isAdding: false, // Ensure adding mode is turned off
         });
     };
 
@@ -81,7 +84,7 @@ class BookManagementView extends Component {
             editingBookTitle,
             editingBookAuthor,
             editingBookLanguage,
-            editingBookIsbn, // Updated: Changed from "ISBN"
+            editingBookIsbn,
             editingBookPrice,
             editingBookStock,
             editingBookDescription,
@@ -92,9 +95,9 @@ class BookManagementView extends Component {
             title: editingBookTitle.toString(),
             author: editingBookAuthor.toString(),
             language: editingBookLanguage.toString(),
-            isbn: editingBookIsbn.toString(), // Updated: Changed from "ISBN"
+            isbn: editingBookIsbn.toString(),
             price: editingBookPrice.toString(),
-            stock: editingBookStock.toString(), // Updated: Changed from "status"
+            stock: editingBookStock.toString(),
             description: editingBookDescription.toString(),
         };
 
@@ -131,6 +134,73 @@ class BookManagementView extends Component {
         this.setState({ searchedBooks });
     };
 
+    showAddModal = () => {
+        this.setState({
+            isAdding: true,
+            editingBookId: null,
+            editingBookTitle: '',
+            editingBookAuthor: '',
+            editingBookLanguage: '',
+            editingBookIsbn: '',
+            editingBookPrice: '',
+            editingBookStock: '',
+            editingBookDescription: '',
+            isEditing: false,
+        });
+    };
+
+    handleAddSave = async () => {
+        const {
+            editingBookTitle,
+            editingBookAuthor,
+            editingBookLanguage,
+            editingBookIsbn,
+            editingBookPrice,
+            editingBookStock,
+            editingBookDescription,
+        } = this.state;
+        if (editingBookDescription == '' || editingBookTitle == '' || editingBookAuthor == '' || editingBookLanguage == '' || editingBookIsbn == '' || editingBookPrice == '' || editingBookStock == '') {
+            alert("Please fill all the fields");
+            return;
+        }
+
+        const newBook = {
+            title: editingBookTitle,
+            author: editingBookAuthor,
+            language: editingBookLanguage,
+            isbn: editingBookIsbn,
+            price: editingBookPrice,
+            stock: editingBookStock,
+            description: editingBookDescription,
+        };
+
+        try {
+            await axios.post('http://localhost:8080/books', JSON.stringify(newBook), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            this.fetchBooks();
+            this.handleAddCancel();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    handleAddCancel = () => {
+        this.setState({
+            isAdding: false,
+            editingBookId: null,
+            editingBookTitle: '',
+            editingBookAuthor: '',
+            editingBookLanguage: '',
+            editingBookIsbn: '',
+            editingBookPrice: '',
+            editingBookStock: '',
+            editingBookDescription: '',
+        });
+    };
+
     render() {
         const {
             books,
@@ -144,6 +214,7 @@ class BookManagementView extends Component {
             editingBookStock,
             editingBookDescription,
             isEditing,
+            isAdding,
         } = this.state;
 
         const dataSource = searchedBooks.length > 0 ? searchedBooks : books;
@@ -169,7 +240,7 @@ class BookManagementView extends Component {
                     />
                     <Column title="Author" dataIndex="author" key="author" />
                     <Column title="Language" dataIndex="language" key="language" />
-                    <Column title="ISBN" dataIndex="isbn" key="isbn" /> {/* Updated: Changed from "ISBN" */}
+                    <Column title="ISBN" dataIndex="isbn" key="isbn" />
                     <Column title="Price" dataIndex="price" key="price" />
                     <Column title="Stock" dataIndex="stock" key="stock" />
                     <Column title="Description" dataIndex="description" key="description" />
@@ -189,15 +260,19 @@ class BookManagementView extends Component {
                     />
                 </Table>
 
+                <Button type="primary" onClick={this.showAddModal}>
+                    Add
+                </Button>
+
                 <Modal
-                    title="Edit Book"
-                    visible={isEditing}
-                    onCancel={this.handleEditCancel}
+                    title={isAdding ? 'Add Book' : 'Edit Book'}
+                    visible={isEditing || isAdding}
+                    onCancel={isAdding ? this.handleAddCancel : this.handleEditCancel}
                     footer={[
-                        <Button key="cancel" onClick={this.handleEditCancel}>
+                        <Button key="cancel" onClick={isAdding ? this.handleAddCancel : this.handleEditCancel}>
                             Cancel
                         </Button>,
-                        <Button key="save" type="primary" onClick={this.handleEditSave}>
+                        <Button key="save" type="primary" onClick={isAdding ? this.handleAddSave : this.handleEditSave}>
                             Save
                         </Button>,
                     ]}
