@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Typography, Button, Form } from 'antd';
+import { Typography, Button, Form, message } from 'antd';
 import NameForm from '../components/NameForm';
 import TwitterForm from '../components/TwitterForm';
 import AvatarUpload from '../components/AvatarUpload';
@@ -18,35 +18,77 @@ class ProfileView extends Component {
             twitter: "",
             notes: "",
         };
+    }async componentDidMount() {
+    try {
+        const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
+        const data = await response.json();
+        if (response.ok) {
+            const { firstname, lastname, twitter, notes } = data;
+            // 更新组件状态
+            this.setState({ firstname, lastname, twitter, notes });
+        } else {
+            console.log(data.error);
+        }
+    } catch (error) {
+        console.log(error);
     }
+}
 
-    async componentDidMount() {
+    handleAvatarChange = (newSrc) => {
+        this.setState({ avatarSrc: newSrc });
+    };
+
+    handleSave = async () => {
+        const { firstname, lastname, twitter, notes } = this.state;
+        const payload = {
+            firstname,
+            lastname,
+            twitter,
+            notes,
+        };
+
         try {
-            const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
-            const data = await response.json();
+            const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
             if (response.ok) {
-                const { firstname, lastname, twitter, notes } = data;
-                // 更新组件状态
-                this.setState({ firstname, lastname, twitter, notes });
+                message.success('Profile saved successfully');
             } else {
-                console.log(data.error);
+                const error = await response.json();
+                message.error(error.message);
             }
         } catch (error) {
             console.log(error);
+            message.error('Failed to save profile');
         }
-    }
-
-
-    handleAvatarChange = () => {
-        // handle avatar change logic goes here
-    };
-
-    handleSave = () => {
-        // handle save logic goes here
     };
 
     handleCancel = () => {
-        // handle cancel logic goes here
+        // Reset the form fields to their original values
+        const { firstname, lastname, twitter, notes } = this.state;
+        this.setState({
+            firstname,
+            lastname,
+            twitter,
+            notes,
+        });
+    };
+
+    handleNameChange = (firstname, lastname) => {
+        this.setState({ firstname, lastname });
+    };
+
+    handleTwitterChange = (twitter) => {
+        this.setState({ twitter });
+    };
+
+    handleNotesChange = (notes) => {
+        this.setState({ notes });
     };
 
     render() {
@@ -57,14 +99,14 @@ class ProfileView extends Component {
                 <Title level={1}>My Profile</Title>
 
                 <Title level={4}>Name</Title>
-                <NameForm firstname={firstname} lastname={lastname} />
+                <NameForm firstname={firstname} lastname={lastname} onChange={this.handleNameChange} />
 
                 <Title level={4}>Twitter</Title>
-                <TwitterForm twitter={twitter} />
+                <TwitterForm twitter={twitter} onChange={this.handleTwitterChange} />
 
                 <Form layout="inline">
                     <AvatarUpload src={avatarSrc} onChange={this.handleAvatarChange} />
-                    <NotesInput notes={notes} />
+                    <NotesInput notes={notes} onChange={this.handleNotesChange} />
                 </Form>
                 <div className="button-wrapper">
                     <Button type="primary" onClick={this.handleSave}>Save</Button>
