@@ -110,13 +110,17 @@ class OrderView extends Component {
                             <h4>Book Count:</h4>
                             <ul>
                                 {Object.keys(statistics.bookCount).map((bookId) => {
-                                    const order = filteredOrders.find((order) =>
-                                        order.items.some((item) => item.id === bookId)
-                                    );
+                                    let title = '';
+                                    for (const order of filteredOrders) {
+                                        const item = order.items.find((item) => item.id == bookId);
+                                        if (item) {
+                                            title = item.title;
+                                            break;
+                                        }
+                                    }
                                     return (
                                         <li key={bookId}>
-                                            Book Name: {order?.items.find((item) => item.id === bookId)?.name},{" "}
-                                            Count: {statistics.bookCount[bookId]}
+                                            Book Name: {title}, Count: {statistics.bookCount[bookId]}
                                         </li>
                                     );
                                 })}
