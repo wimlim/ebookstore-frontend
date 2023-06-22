@@ -74,7 +74,6 @@ class CartView extends Component {
             alert("Error occurred while purchasing the items!");
         }
     }
-
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/lists/${this.props.user}`);
@@ -90,8 +89,6 @@ class CartView extends Component {
             console.error('Error fetching data:', err);
         }
     }
-
-
     render() {
         const filteredLists = this.state.lists.filter(item => {
             return item.title.toLowerCase().includes(this.state.searchContent.toLowerCase());
