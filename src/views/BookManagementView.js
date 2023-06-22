@@ -3,7 +3,8 @@ import { Table, Button, Modal, Form, Input } from 'antd';
 import axios from 'axios';
 
 import SearchBar from '../components/SearchBar';
-
+import BookModal from '../components/BookModal';
+import fetchBooks from '../services/BookService';
 const { Column } = Table;
 
 class BookManagementView extends Component {
@@ -29,16 +30,6 @@ class BookManagementView extends Component {
         this.fetchBooks();
     }
 
-    fetchBooks = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/books');
-            const books = response.data;
-            this.setState({ books });
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     showEditModal = (book) => {
         const {
             id,
@@ -62,6 +53,15 @@ class BookManagementView extends Component {
             isEditing: true,
             isAdding: false, // Ensure adding mode is turned off
         });
+    };
+    fetchBooks = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/books');
+            const books = response.data;
+            this.setState({ books });
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     handleEditCancel = () => {
@@ -264,71 +264,20 @@ class BookManagementView extends Component {
                     Add
                 </Button>
 
-                <Modal
-                    title={isAdding ? 'Add Book' : 'Edit Book'}
-                    visible={isEditing || isAdding}
-                    onCancel={isAdding ? this.handleAddCancel : this.handleEditCancel}
-                    footer={[
-                        <Button key="cancel" onClick={isAdding ? this.handleAddCancel : this.handleEditCancel}>
-                            Cancel
-                        </Button>,
-                        <Button key="save" type="primary" onClick={isAdding ? this.handleAddSave : this.handleEditSave}>
-                            Save
-                        </Button>,
-                    ]}
-                >
-                    <Form>
-                        <Form.Item label="Title">
-                            <Input
-                                name="editingBookTitle"
-                                value={editingBookTitle}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Author">
-                            <Input
-                                name="editingBookAuthor"
-                                value={editingBookAuthor}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Language">
-                            <Input
-                                name="editingBookLanguage"
-                                value={editingBookLanguage}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="ISBN">
-                            <Input
-                                name="editingBookIsbn"
-                                value={editingBookIsbn}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Price">
-                            <Input
-                                name="editingBookPrice"
-                                value={editingBookPrice}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Stock">
-                            <Input
-                                name="editingBookStock"
-                                value={editingBookStock}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Description">
-                            <Input.TextArea
-                                name="editingBookDescription"
-                                value={editingBookDescription}
-                                onChange={this.handleInputChange}
-                            />
-                        </Form.Item>
-                    </Form>
-                </Modal>
+                <BookModal
+                    isAdding={isAdding}
+                    isEditing={isEditing}
+                    editingBookTitle={editingBookTitle}
+                    editingBookAuthor={editingBookAuthor}
+                    editingBookLanguage={editingBookLanguage}
+                    editingBookIsbn={editingBookIsbn}
+                    editingBookPrice={editingBookPrice}
+                    editingBookStock={editingBookStock}
+                    editingBookDescription={editingBookDescription}
+                    handleInputChange={this.handleInputChange}
+                    handleCancel={isAdding ? this.handleAddCancel : this.handleEditCancel}
+                    handleSave={isAdding ? this.handleAddSave : this.handleEditSave}
+                />
             </div>
         );
     }

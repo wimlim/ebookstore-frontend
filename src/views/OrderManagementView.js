@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Table, Input, DatePicker, Modal, Button } from 'antd';
 import { filterOrders } from '../utils/OrderUtil';
+import StatisticsModal from '../components/StatisticsModal';
+import { fetchOrders } from '../services/OrderService'; // Import fetchOrders from OrderService
 
 const { Column } = Table;
 const { RangePicker } = DatePicker;
@@ -20,31 +22,12 @@ class OrderManagementView extends Component {
     }
 
     componentDidMount() {
-        this.fetchOrders();
+        this.fetchOrders(); // Call fetchOrders from componentDidMount
     }
 
     fetchOrders = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/orders/all`);
-            if (!res.ok) {
-                throw new Error(`${res.status} ${res.statusText}`);
-            }
-            const json = await res.json();
-            const orders = json.map((timestampObj) => {
-                const timestamp = timestampObj.timestamp;
-                const items = timestampObj.items.map((item) => ({
-                    id: item.bookId,
-                    title: item.title,
-                    amount: item.num,
-                    price: item.price,
-                }));
-                return {
-                    id: timestampObj.id,
-                    userId: timestampObj.userId,
-                    timestamp,
-                    items,
-                };
-            });
+            const orders = await fetchOrders(); // Call the imported fetchOrders function
             this.setState({ orders });
             this.handleSearch();
         } catch (error) {
@@ -143,37 +126,12 @@ class OrderManagementView extends Component {
                 </div>
 
                 {statistics && (
-                    <Modal title="Statistics" visible={showModal} onCancel={this.handleCloseModal} footer={null}>
-                        <div>
-                            <h2>Book Sales Ranking</h2>
-                            <Table
-                                dataSource={statistics.bookCount}
-                                pagination={false}
-                                size="small"
-                                style={{ marginBottom: '16px' }}
-                            >
-                                <Column title="Book ID" dataIndex="0" key="bookId" />
-                                <Column title="Count" dataIndex="1" key="count" />
-                            </Table>
-                        </div>
-
-                        <div>
-                            <h2>User Consumption Ranking</h2>
-                            <Table
-                                dataSource={Object.entries(userConsumption).sort((a, b) => b[1] - a[1])} // Updated to sort by consumption
-                                pagination={false}
-                                size="small"
-                            >
-                                <Column title="User ID" dataIndex="0" key="userId" />
-                                <Column
-                                    title="Consumption"
-                                    dataIndex="1"
-                                    key="consumption"
-                                    render={(value) => <span>${value.toFixed(2)}</span>}
-                                />
-                            </Table>
-                        </div>
-                    </Modal>
+                    <StatisticsModal
+                        showModal={showModal}
+                        handleCloseModal={this.handleCloseModal}
+                        statistics={statistics}
+                        userConsumption={userConsumption}
+                    />
                 )}
 
                 <Table dataSource={dataSource} rowKey="id">

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Button, message } from 'antd';
-import axios from 'axios';
+import UserService from '../services/UserService';
 
 const { Column } = Table;
 
@@ -13,43 +13,28 @@ class UserManagementView extends Component {
     }
 
     componentDidMount = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/users/all');
-            const users = response.data;
-            this.setState({ users });
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    fetchUsers = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/users/all');
-            const users = response.data;
-            this.setState({ users });
-        } catch (error) {
-            console.log(error);
-        }
+        const users = await UserService.fetchUsers();
+        this.setState({ users });
     };
 
     handleBanUser = async (userId) => {
-        try {
-            await axios.put(`http://localhost:8080/users/ban/${userId}`);
+        const success = await UserService.banUser(userId);
+        if (success) {
             message.success('User banned successfully');
-            this.fetchUsers();
-        } catch (error) {
-            console.log(error);
+            const users = await UserService.fetchUsers();
+            this.setState({ users });
+        } else {
             message.error('Failed to ban user');
         }
     };
 
     handleUnbanUser = async (userId) => {
-        try {
-            await axios.put(`http://localhost:8080/users/unban/${userId}`);
+        const success = await UserService.unbanUser(userId);
+        if (success) {
             message.success('User unbanned successfully');
-            this.fetchUsers();
-        } catch (error) {
-            console.log(error);
+            const users = await UserService.fetchUsers();
+            this.setState({ users });
+        } else {
             message.error('Failed to unban user');
         }
     };
