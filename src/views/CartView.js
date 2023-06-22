@@ -55,8 +55,6 @@ class CartView extends Component {
             this.setState({ lists: newList });
         }
     }
-
-
     handlePurchase = async () => {
         try {
             const response = await fetch(`http://localhost:8080/lists/${this.props.user}`, {

@@ -42,14 +42,14 @@ const AvatarUpload = ({ user, src, onChange }) => {
 
     return (
         <div className="avatar-wrapper">
-            <Title level={4}>头像</Title>
+            <Title level={4}>Avatar</Title>
             <Avatar shape="square" size={128} src={tempSrc || src} style={{ marginBottom: '24px' }} />
             <Upload
                 name="avatar"
                 customRequest={customRequest}
                 onChange={handleUpload}
             >
-                <UploadOutlined /> 上传头像
+                <UploadOutlined /> Upload Avatar
             </Upload>
         </div>
     );

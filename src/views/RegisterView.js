@@ -12,7 +12,6 @@ const RegisterView = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // 校验两次输入的密码是否相同
         if (password !== confirmPassword) {
             alert('Passwords do not match');
             return;
@@ -21,7 +20,6 @@ const RegisterView = () => {
             alert('Please fill in all the fields');
             return;
         }
-        // 校验密码格式
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
         if (!passwordRegex.test(password)) {
             alert('Password must be 8 to 16 characters long, contain at least one number, one lowercase and one uppercase letter');
@@ -41,10 +39,9 @@ const RegisterView = () => {
                 body: JSON.stringify({ username, password, email })
             });
             const data = await response.text();
-            // 处理注册成功或失败的逻辑
             if (data === 'Register successfully') {
                 alert('Registration successful');
-                navigate('/login'); // 注册成功后跳转到登录页面
+                navigate('/login');
             } else {
                 if (data === "Username already exists")
                     alert('Username already exists');

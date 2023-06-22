@@ -12,7 +12,7 @@ class HomeView extends Component {
         super(props);
         this.state = {
             searchContent: '',
-            books: [] // 保存从localhost:8080获取的书籍数据
+            books: []
         };
         this.handleSearch = this.handleSearch.bind(this);
     }

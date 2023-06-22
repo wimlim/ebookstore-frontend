@@ -87,7 +87,7 @@ class OrderView extends Component {
 
     render() {
         const { selectedRange, orders, showModal, statistics } = this.state;
-        const filteredOrders = filterOrders(orders, selectedRange) || []; // 处理filteredOrders为undefined的情况
+        const filteredOrders = filterOrders(orders, selectedRange) || [];
 
         return (
             <div>
@@ -115,7 +115,7 @@ class OrderView extends Component {
                                     );
                                     return (
                                         <li key={bookId}>
-                                            Order ID: {order?.id}, Book ID: {bookId},{" "}
+                                            Book Name: {order?.items.find((item) => item.id === bookId)?.name},{" "}
                                             Count: {statistics.bookCount[bookId]}
                                         </li>
                                     );

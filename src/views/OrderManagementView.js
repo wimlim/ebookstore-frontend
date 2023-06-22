@@ -100,12 +100,6 @@ class OrderManagementView extends Component {
         // Sort bookCount object by value in descending order
         const sortedBookCount = Object.entries(bookCount).sort((a, b) => b[1] - a[1]);
 
-        const statistics = {
-            bookCount: sortedBookCount,
-            totalCount,
-            totalPrice,
-        };
-
         const userConsumption = searchedOrders.reduce((acc, order) => {
             if (acc[order.userId]) {
                 acc[order.userId] += order.items.reduce((total, item) => total + item.price * item.amount, 0);
@@ -115,7 +109,7 @@ class OrderManagementView extends Component {
             return acc;
         }, {});
 
-        this.setState({ statistics, userConsumption, showModal: true });
+        this.setState({ statistics: { bookCount: sortedBookCount, totalCount, totalPrice }, userConsumption, showModal: true });
     };
 
     handleCloseModal = () => {
@@ -166,7 +160,7 @@ class OrderManagementView extends Component {
                         <div>
                             <h2>User Consumption Ranking</h2>
                             <Table
-                                dataSource={Object.entries(userConsumption)}
+                                dataSource={Object.entries(userConsumption).sort((a, b) => b[1] - a[1])} // Updated to sort by consumption
                                 pagination={false}
                                 size="small"
                             >
