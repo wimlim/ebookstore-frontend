@@ -17,7 +17,7 @@ const HeaderInfo: React.FC = () => (
                     </a>
                 </Col>
                 <Col xs={0} sm={0} md={19} lg={19} xl={19} xxl={20} style={{textAlign: 'right'}}>
-                    {"Hello Alice"}
+                    {"Hello!"}
                 </Col>
             </Row>
         </div>
