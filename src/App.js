@@ -49,7 +49,7 @@ const App = () => {
                             {loggedIn && <Route path="/home" element={<HomeView />} />}
                             {loggedIn && <Route path="/cart" element={<CartView user={userauth.token} />} />}
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}
-                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} />} />}
+                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} onLogout={handleLogout}/>} />}
                             {loggedIn && <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />}
                             {loggedIn && <Route path="/OrderManagement" element={<OrderManagementView user={userauth} />} />}
                             {loggedIn && <Route path="/UserManagement" element={<UserManagementView user={userauth} />} />}
