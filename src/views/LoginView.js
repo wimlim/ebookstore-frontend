@@ -12,6 +12,7 @@ const LoginView = ({ onLogin }) => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ account: username, password }),
+                credentials: 'include',
             });
             const data = await response.text();
             if (data == 'banned') {
