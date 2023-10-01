@@ -29,6 +29,7 @@ const App = () => {
     };
 
     const handleLogout = async () => {
+        console.log("logout");
         setLoggedIn(false);
         setUserauth(null);
         try {

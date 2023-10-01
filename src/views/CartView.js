@@ -57,23 +57,44 @@ class CartView extends Component {
     }
     handlePurchase = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/lists/${this.props.user}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            });
-            if (response.ok) {
-                alert("Purchase successfully!");
-            } else {
-                throw new Error("Failed to create order!");
-            }
-            this.setState({ lists: [] });
+            const purchaseInterval = setInterval(async () => {
+                const response = await fetch(`http://localhost:8080/lists/${this.props.user}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (response.ok) {
+                    const resultResponse = await fetch(`http://localhost:8080/lists/result/${this.props.user}`);
+                    if (resultResponse.ok) {
+                        const resultData = await resultResponse.text();
+
+                        if (resultData === "Purchase successfully!") {
+                            clearInterval(purchaseInterval); // 清除定时器
+                            alert("Purchase successfully!");
+                            this.setState({ lists: [] });
+                        } else if (resultData === "Purchase being processed!") {
+                        } else {
+                            alert("Unknown response from server: " + resultData);
+                            clearInterval(purchaseInterval); // 清除定时器
+                        }
+                    } else {
+                        clearInterval(purchaseInterval); // 清除定时器
+                        throw new Error("Failed to check order status!");
+                    }
+                } else {
+                    clearInterval(purchaseInterval); // 清除定时器
+                    throw new Error("Failed to create order!");
+                }
+            }, 1000); // 每隔1秒发送一次请求
         } catch (error) {
             console.error(error);
             alert("Error occurred while purchasing the items!");
         }
     }
+
+
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/lists/${this.props.user}`);
