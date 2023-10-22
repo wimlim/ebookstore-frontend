@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import '../css/home.css'
 import SearchBar from "../components/SearchBar";
 import ShoppingList from "../components/ShoppingList";
-
+import $ from 'jquery';
 
 class CartView extends Component {
     constructor(props) {
@@ -55,45 +55,45 @@ class CartView extends Component {
             this.setState({ lists: newList });
         }
     }
-    handlePurchase = async () => {
+    handlePurchase = async() => {
         try {
-            const purchaseInterval = setInterval(async () => {
-                const response = await fetch(`http://localhost:8080/lists/${this.props.user}`, {
+            // 建立WebSocket连接
+            const userId = $("#name").val();
+            const socketUrl = `ws://localhost:8080/transfer/${this.props.user}`;
+
+            const socket = new WebSocket(socketUrl);
+
+            socket.onopen = () => {
+                // 发送购买请求到后端
+                const response = fetch(`http://localhost:8080/lists/${this.props.user}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                 });
+                // 在WebSocket连接打开后，等待消息
+                socket.onmessage = (event) => {
+                    // 处理从WebSocket服务器接收到的消息
+                    const serverMsg = "收到服务端信息：" + event.data;
+                    // 在这里处理收到的消息，例如将消息显示在UI上
+                    alert("购买成功！");
+                    // 关闭WebSocket连接
+                    socket.close();
+                };
+            };
+            socket.onclose = () => {
+                console.log("WebSocket连接已关闭");
+            };
 
-                if (response.ok) {
-                    const resultResponse = await fetch(`http://localhost:8080/lists/result/${this.props.user}`);
-                    if (resultResponse.ok) {
-                        const resultData = await resultResponse.text();
+            socket.onerror = () => {
+                console.log("WebSocket发生了错误");
+            };
 
-                        if (resultData === "Purchase successfully!") {
-                            clearInterval(purchaseInterval); // 清除定时器
-                            alert("Purchase successfully!");
-                            this.setState({ lists: [] });
-                        } else if (resultData === "Purchase being processed!") {
-                        } else {
-                            alert("Unknown response from server: " + resultData);
-                            clearInterval(purchaseInterval); // 清除定时器
-                        }
-                    } else {
-                        clearInterval(purchaseInterval); // 清除定时器
-                        throw new Error("Failed to check order status!");
-                    }
-                } else {
-                    clearInterval(purchaseInterval); // 清除定时器
-                    throw new Error("Failed to create order!");
-                }
-            }, 1000); // 每隔1秒发送一次请求
         } catch (error) {
             console.error(error);
-            alert("Error occurred while purchasing the items!");
+            alert("购买商品时出现错误！");
         }
     }
-
 
     async componentDidMount() {
         try {
