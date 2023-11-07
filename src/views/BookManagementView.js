@@ -107,7 +107,7 @@ class BookManagementView extends Component {
                     'Content-Type': 'application/json',
                 },
             });
-            this.fetchBooks();
+            await this.fetchBooks();
             this.handleEditCancel();
         } catch (error) {
             console.log(error);
@@ -117,7 +117,7 @@ class BookManagementView extends Component {
     handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:8080/books/${id}`);
-            this.fetchBooks();
+            await this.fetchBooks();
         } catch (error) {
             console.log(error);
         }
@@ -165,13 +165,13 @@ class BookManagementView extends Component {
         }
 
         const newBook = {
-            title: editingBookTitle,
-            author: editingBookAuthor,
-            language: editingBookLanguage,
-            isbn: editingBookIsbn,
-            price: editingBookPrice,
-            stock: editingBookStock,
-            description: editingBookDescription,
+            title: editingBookTitle.toString(),
+            author: editingBookAuthor.toString(),
+            language: editingBookLanguage.toString(),
+            isbn: editingBookIsbn.toString(),
+            price: editingBookPrice.toString(),
+            stock: editingBookStock.toString(),
+            description: editingBookDescription.toString(),
         };
 
         try {
@@ -180,7 +180,7 @@ class BookManagementView extends Component {
                     'Content-Type': 'application/json',
                 },
             });
-            this.fetchBooks();
+            await this.fetchBooks();
             this.handleAddCancel();
         } catch (error) {
             console.log(error);
