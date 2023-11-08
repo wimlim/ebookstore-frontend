@@ -10,7 +10,8 @@ class CartView extends Component {
         super(props);
         this.state = {
             searchContent: '',
-            lists: []
+            lists: [],
+            totalAmount: 0
         };
         this.handleSearch = this.handleSearch.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
@@ -18,6 +19,19 @@ class CartView extends Component {
         this.handlePurchase = this.handlePurchase.bind(this);
     }
 
+    fetchTotalAmount = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/lists/amount/${this.props.user}`);
+            if (response.ok) {
+                const totalAmount = await response.json(); // 直接获取整数值
+                this.setState({ totalAmount });
+            } else {
+                throw new Error('Network response was not ok.');
+            }
+        } catch (error) {
+            console.error('Error fetching total amount:', error);
+        }
+    }
     handleSearch = (content) => {
         this.setState({ searchContent: content });
     }
@@ -32,6 +46,7 @@ class CartView extends Component {
         if(response.ok){
             const newList = this.state.lists.filter(item => item.title !== record.title);
             this.setState({ lists: newList });
+            this.componentDidMount();
         }
     }
 
@@ -53,6 +68,7 @@ class CartView extends Component {
                 return item;
             });
             this.setState({ lists: newList });
+            this.componentDidMount();
         }
     }
     handlePurchase = async() => {
@@ -77,6 +93,7 @@ class CartView extends Component {
                     const serverMsg = "收到服务端信息：" + event.data;
                     // 在这里处理收到的消息，例如将消息显示在UI上
                     alert("购买成功！");
+                    this.componentDidMount();
                     // 关闭WebSocket连接
                     socket.close();
                 };
@@ -98,6 +115,7 @@ class CartView extends Component {
     async componentDidMount() {
         try {
             const res = await fetch(`http://localhost:8080/lists/${this.props.user}`);
+            await this.fetchTotalAmount();
             const json = await res.json();
             const books = json.map(data => ({
                 cover: data.id,
@@ -110,6 +128,7 @@ class CartView extends Component {
             console.error('Error fetching data:', err);
         }
     }
+
     render() {
         const filteredLists = this.state.lists.filter(item => {
             return item.title.toLowerCase().includes(this.state.searchContent.toLowerCase());
@@ -128,7 +147,10 @@ class CartView extends Component {
             <div>
                 <SearchBar handleSearch={this.handleSearch} />
                 <ShoppingList lists={tmp_lists} handleDelete={this.handleDelete} handleAmountChange={this.handleAmountChange} />
-                <Button onClick={this.handlePurchase}> Purchase</Button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Button onClick={this.handlePurchase}> Purchase</Button>
+                    <div>Total Amount: {this.state.totalAmount}</div>
+                </div>
             </div>
         );
     }
