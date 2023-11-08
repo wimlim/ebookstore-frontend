@@ -139,7 +139,7 @@ class CartView extends Component {
                 cover: list.cover,
                 title: list.title,
                 amount: list.amount,
-                price: list.amount * list.price,
+                price:  list.price,
             };
         });
 
@@ -149,7 +149,9 @@ class CartView extends Component {
                 <ShoppingList lists={tmp_lists} handleDelete={this.handleDelete} handleAmountChange={this.handleAmountChange} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Button onClick={this.handlePurchase}> Purchase</Button>
-                    <div>Total Amount: {this.state.totalAmount}</div>
+                    <div style={{ background: '#f0f0f0', padding: '8px 12px', border: '1px solid #ccc', borderRadius: '5px' }}>
+                        <span style={{ fontWeight: 'bold' }}>Total Amount:</span> {this.state.totalAmount}
+                    </div>
                 </div>
             </div>
         );
