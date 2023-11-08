@@ -107,8 +107,8 @@ class BookManagementView extends Component {
                     'Content-Type': 'application/json',
                 },
             });
-            this.componentDidMount();
             this.handleEditCancel();
+            this.componentDidMount();
         } catch (error) {
             console.log(error);
         }
@@ -180,8 +180,8 @@ class BookManagementView extends Component {
                     'Content-Type': 'application/json',
                 },
             });
-            this.componentDidMount();
             this.handleAddCancel();
+            this.componentDidMount();
         } catch (error) {
             console.log(error);
         }
