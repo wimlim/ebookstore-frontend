@@ -18,6 +18,22 @@ class HomeView extends Component {
     }
 
     async componentDidMount() {
+        if (this.state.searchContent === '') {
+            try {
+                const res = await fetch('http://localhost:8080/books');
+                const json = await res.json();
+                const books = json.map(data => ({
+                    id: data.id,
+                    name: data.title,
+                    price: data.price,
+                }));
+                this.setState({ books });
+            } catch (err) {
+                console.error('Error fetching data:', err);
+            }
+            return;
+        }
+
         const query = {
             query: `
             query {
