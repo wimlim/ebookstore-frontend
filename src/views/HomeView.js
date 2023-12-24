@@ -18,10 +18,31 @@ class HomeView extends Component {
     }
 
     async componentDidMount() {
+        const query = {
+            query: `
+            query {
+                bookByTitle(title: "${this.state.searchContent}") {
+                    id
+                    title
+                    author
+                    language
+                    isbn
+                    price
+                    stock
+                    description
+                }
+            }
+        `
+        };
+
         try {
-            const res = await fetch('http://localhost:8080/books');
+            const res = await fetch('http://localhost:8080/graphql', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(query)
+            });
             const json = await res.json();
-            const books = json.map(data => ({
+            const books = json.data.bookByTitle.map(data => ({
                 id: data.id,
                 name: data.title,
                 price: data.price,
