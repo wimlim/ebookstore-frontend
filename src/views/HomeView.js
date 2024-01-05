@@ -70,19 +70,16 @@ class HomeView extends Component {
     }
 
     handleSearch = (content) => {
-        this.setState({ searchContent: content });
-    }
-
-    render() {
-        const filteredBooks = this.state.books.filter(book => {
-            return book.name.toLowerCase().includes(this.state.searchContent.toLowerCase());
+        this.setState({ searchContent: content }, () => {
+            this.componentDidMount();
         });
-
+    }
+    render() {
         return (
             <div>
                 <SearchBar handleSearch={this.handleSearch} />
                 <MyCarousel />
-                <BookList books={filteredBooks} />
+                <BookList books={this.state.books} />
             </div>
         );
     }
