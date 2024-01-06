@@ -1,62 +1,63 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Button, Form, message } from 'antd';
 import NameForm from '../components/NameForm';
 import TwitterForm from '../components/TwitterForm';
 import AvatarUpload from '../components/AvatarUpload';
 import NotesInput from '../components/NotesInput';
 import '../css/profile.css';
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
-class ProfileView extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            avatarSrc: "",
-            firstname: "",
-            lastname: "",
-            twitter: "",
-            notes: "",
+const ProfileView = (props) => {
+    const [avatarSrc, setAvatarSrc] = useState("");
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [twitter, setTwitter] = useState("");
+    const [notes, setNotes] = useState("");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/users/profile/${props.user}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const { firstname, lastname, twitter, notes } = data;
+                    setFirstname(firstname);
+                    setLastname(lastname);
+                    setTwitter(twitter);
+                    setNotes(notes);
+                } else {
+                    console.log(data.error);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+
+            try {
+                const imageResponse = await fetch(`http://localhost:8080/users/avatar/${props.user}`);
+                if (imageResponse.ok) {
+                    const imageBlob = await imageResponse.blob();
+                    const imageUrl = URL.createObjectURL(imageBlob);
+                    setAvatarSrc(imageUrl);
+                } else {
+                    console.log(imageResponse.error);
+                }
+            } catch (error) {
+                console.log(error);
+            }
         };
-    }
 
-    async componentDidMount() {
-        try {
-            const response = await fetch(`http://localhost:8080/users/profile/${this.props.user}`);
-            const data = await response.json();
-            if (response.ok) {
-                const { firstname, lastname, twitter, notes } = data;
-                this.setState({ firstname, lastname, twitter, notes });
-            } else {
-                console.log(data.error);
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        fetchData();
+    }, [props.user]);
 
-        try {
-            const imageResponse = await fetch(`http://localhost:8080/users/avatar/${this.props.user}`);
-            if (imageResponse.ok) {
-                const imageBlob = await imageResponse.blob();
-                const imageUrl = URL.createObjectURL(imageBlob);
-                this.setState({ avatarSrc: imageUrl });
-            } else {
-                console.log(imageResponse.error);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    handleAvatarChange = (file) => {
-        this.setState({ avatarFile: file });
+    const handleAvatarChange = (file) => {
+        // 实现您的逻辑来处理文件
     };
 
-    handleSave = async () => {
-        const { firstname, lastname, twitter, notes } = this.state;
-
+    const handleSave = async () => {
         try {
-            const profileResponse = await fetch(`http://localhost:8080/users/profile/${this.props.user}`, {
+            const profileResponse = await fetch(`http://localhost:8080/users/profile/${props.user}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -79,58 +80,58 @@ class ProfileView extends Component {
         }
     };
 
-    handleCancel = () => {
-        const { firstname, lastname, twitter, notes } = this.state;
-        this.setState({
-            firstname,
-            lastname,
-            twitter,
-            notes,
-            avatarFile: null,
-        });
+    const handleCancel = () => {
+        // 实现取消操作的逻辑
     };
 
-    handleNameChange = (firstname, lastname) => {
-        this.setState({ firstname, lastname });
+    const handleNameChange = (firstname, lastname) => {
+        setFirstname(firstname);
+        setLastname(lastname);
     };
 
-    handleTwitterChange = (twitter) => {
-        this.setState({ twitter });
+    const handleTwitterChange = (twitter) => {
+        setTwitter(twitter);
     };
 
-    handleNotesChange = (notes) => {
-        this.setState({ notes });
+    const handleNotesChange = (notes) => {
+        setNotes(notes);
     };
 
-    render() {
-        const { avatarSrc, firstname, lastname, twitter, notes } = this.state;
+    const navigate = useNavigate();
 
-        return (
-            <div className="profile-view">
-                <Title level={1}>My Profile</Title>
+    const handleLogout = () => {
+        props.onLogout();
+        navigate("/");
+    };
 
-                <Title level={4}>Name</Title>
-                <NameForm firstname={firstname} lastname={lastname} onChange={this.handleNameChange} />
+    return (
+        <div className="profile-view">
+            <Title level={1}>My Profile</Title>
 
-                <Title level={4}>Twitter</Title>
-                <TwitterForm twitter={twitter} onChange={this.handleTwitterChange} />
+            <Title level={4}>Name</Title>
+            <NameForm firstname={firstname} lastname={lastname} onChange={handleNameChange} />
 
-                <Form layout="inline">
-                    <AvatarUpload user={this.props.user} src={avatarSrc} onChange={this.handleAvatarChange} />
-                    <NotesInput notes={notes} onChange={this.handleNotesChange} />
-                </Form>
+            <Title level={4}>Twitter</Title>
+            <TwitterForm twitter={twitter} onChange={handleTwitterChange} />
 
-                <div className="button-wrapper">
-                    <Button type="primary" onClick={this.handleSave}>
-                        Save
-                    </Button>
-                    <Button style={{ marginLeft: '8px' }} onClick={this.handleCancel}>
-                        Cancel
-                    </Button>
-                </div>
+            <Form layout="inline">
+                <AvatarUpload user={props.user} src={avatarSrc} onChange={handleAvatarChange} />
+                <NotesInput notes={notes} onChange={handleNotesChange} />
+            </Form>
+
+            <div className="button-wrapper">
+                <Button type="primary" onClick={handleSave}>
+                    Save
+                </Button>
+                <Button style={{ marginLeft: '8px' }} onClick={handleCancel}>
+                    Cancel
+                </Button>
             </div>
-        );
-    }
-}
+            <Button onClick={handleLogout}>
+                Log out
+            </Button>
+        </div>
+    );
+};
 
 export default ProfileView;

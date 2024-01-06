@@ -28,9 +28,28 @@ const App = () => {
         setUserauth(user);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        console.log("logout");
         setLoggedIn(false);
         setUserauth(null);
+        try {
+            const response = await fetch("http://localhost:8080/users/logout", {
+                method: "POST",
+                credentials: "include",
+            });
+            if (response.ok) {
+                const elapsedTime = await response.text();
+                alert(elapsedTime);
+                setLoggedIn(false);
+                setUserauth(null);
+            } else {
+                // 处理错误情况
+                alert("Logout failed");
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+            alert("An error occurred during logout");
+        }
     };
 
     return (
@@ -49,7 +68,7 @@ const App = () => {
                             {loggedIn && <Route path="/home" element={<HomeView />} />}
                             {loggedIn && <Route path="/cart" element={<CartView user={userauth.token} />} />}
                             {loggedIn && <Route path="/order" element={<OrderView user={userauth.token} />} />}
-                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} />} />}
+                            {loggedIn && <Route path="/profile" element={<ProfileView user={userauth.token} onLogout={handleLogout}/>} />}
                             {loggedIn && <Route path="/bookManagement" element={<BookManagementView user={userauth} />} />}
                             {loggedIn && <Route path="/OrderManagement" element={<OrderManagementView user={userauth} />} />}
                             {loggedIn && <Route path="/UserManagement" element={<UserManagementView user={userauth} />} />}
