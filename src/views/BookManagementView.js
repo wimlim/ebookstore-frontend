@@ -220,6 +220,10 @@ class BookManagementView extends Component {
         }
     }
 
+    hideSparkModalHandler = () => {
+        this.setState({ showSparkModal: false });
+    };
+
 
     render() {
         const {
