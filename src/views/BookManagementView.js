@@ -23,6 +23,8 @@ class BookManagementView extends Component {
             editingBookDescription: '',
             isEditing: false,
             isAdding: false,
+            showSparkModal: false,
+            sparkModalData: [],
         };
     }
 
@@ -200,6 +202,24 @@ class BookManagementView extends Component {
             editingBookDescription: '',
         });
     };
+    showSparkModalHandler = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/books/spark');
+            const sparkData = response.data;
+
+            if (Array.isArray(sparkData)) {
+                this.setState({
+                    sparkModalData: sparkData,
+                    showSparkModal: true, // 显示Spark弹窗
+                });
+            } else {
+                console.error("Data from the backend is not an array.");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
 
     render() {
         const {
@@ -215,6 +235,8 @@ class BookManagementView extends Component {
             editingBookDescription,
             isEditing,
             isAdding,
+            showSparkModal,
+            sparkModalData,
         } = this.state;
 
         const dataSource = searchedBooks.length > 0 ? searchedBooks : books;
@@ -263,6 +285,25 @@ class BookManagementView extends Component {
                 <Button type="primary" onClick={this.showAddModal}>
                     Add
                 </Button>
+
+                {/* 新添加的 "Show Spark Modal" 按钮 */}
+                <Button type="primary" onClick={this.showSparkModalHandler}>
+                    Show Spark Modal
+                </Button>
+
+                {/* 新添加的弹窗组件 */}
+                <Modal
+                    title="Keyword Count"
+                    visible={showSparkModal}
+                    onCancel={this.hideSparkModalHandler}
+                    footer={null}
+                >
+                    <Table dataSource={sparkModalData} rowKey="keyword">
+                        <Column title="Keyword" dataIndex="keyword" key="keyword" />
+                        <Column title="Count" dataIndex="count" key="count" />
+                    </Table>
+                </Modal>
+
 
                 <BookModal
                     isAdding={isAdding}
